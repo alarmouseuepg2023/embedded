@@ -1,18 +1,27 @@
 /*
   PLACA: ESP32-WROOM-DA Module
 */
-#define LED 2
+#include <WiFi.h>
 
-// the setup function runs once when you press reset or power the board
+#define WIFI_SSID "StatusNet 20 303"
+#define WIFI_PASSWORD "98706993"
+
+
+BluetoothSerial SerialBT;
+
 void setup() {
-  // initialize digital pin LED_BUILTIN as an output.
-  pinMode(LED, OUTPUT);
+ Serial.begin(115200);
+ WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+ 
+ while (WiFi.status() != WL_CONNECTED) {
+  delay(500);
+  Serial.println("Connecting to WiFi..");
+ }
+ Serial.println("Connected to the WiFi network");
+
 }
 
-// the loop function runs over and over again forever
 void loop() {
-  digitalWrite(LED, HIGH);   // turn the LED on (HIGH is the voltage level)
-  delay(1000);                       // wait for a second
-  digitalWrite(LED, LOW);    // turn the LED off by making the voltage LOW
-  delay(1000);                       // wait for a second
+  delay(2000);
+          
 }
