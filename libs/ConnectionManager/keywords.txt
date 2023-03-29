@@ -1,0 +1,3 @@
+ConnectionManager    KEYWORD1
+reconnect            KEYWORD2
+connected            KEYWORD2
