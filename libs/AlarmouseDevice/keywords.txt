@@ -1,0 +1,5 @@
+AlarmouseDevice         KEYWORD1
+statusChangedByExternal KEYWORD2
+loop                    KEYWORD2
+targetDetected          KEYWORD2
+changeStatus            KEYWORD2
