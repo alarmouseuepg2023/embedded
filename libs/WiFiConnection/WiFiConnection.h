@@ -8,28 +8,23 @@
 #define PRINT_STATUS_IN_MS 2000
 
 
-typedef struct wifi_credentials
-{
-  bool configured;
-  char ssid[32];
-  char password[32];
-} WiFiCredentials;
-
-
 class WiFiConnection : public ConnectionManager {
 
 private:
-  WiFiCredentials* wifiCredentials;
+  char* ssid;
+  char* password;
+  char* espTouchPassword;
 
 protected:
   void connect();
 
 public:
-  WiFiConnection(WiFiCredentials*);
+  WiFiConnection(char*);
   bool connected();
 	String getMacAddress();
 	IPAddress getLocalIP();
 	void printStatus();
+  bool waitSmartConfig();
 
 };
 
