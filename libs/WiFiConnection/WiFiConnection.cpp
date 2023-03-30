@@ -1,13 +1,12 @@
 #include "WiFiConnection.h"
 
 
-WiFiConnection::WiFiConnection(char* ssid, char* password) {
-	this->ssid = ssid;
-	this->password = password;
+WiFiConnection::WiFiConnection(WiFiCredentials* wifiCredentials) {
+	this->wifiCredentials = wifiCredentials;
 }
 
 void WiFiConnection::connect() {
-  WiFi.begin(this->ssid, this->password);
+  WiFi.begin(this->wifiCredentials->ssid, this->wifiCredentials->password);
 }
 
 bool WiFiConnection::connected() {

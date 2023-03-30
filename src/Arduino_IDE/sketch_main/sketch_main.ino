@@ -3,10 +3,8 @@
 
 #define PIN_LED_WIFI_FEEDBACK D21
 
-char wifi_ssid[32] = "";
-char wifi_password[32] = "";
-
-WiFiConnection wiFiConnection = WiFiConnection(wifi_ssid, wifi_password);
+WiFiCredentials wifi_credentials = { false, "", "" };
+WiFiConnection wifi_connection = WiFiConnection(&wifi_credentials);
 
 void setup()
 {
@@ -17,9 +15,9 @@ void setup()
 
 void loop()
 {
-  if (!wiFiConnection.connected()) wiFiConnection.reconnect();
+  if (wifi_credentials.configured && !wifi_connection.connected())
+    wifi_connection.reconnect();
 
-  digitalWrite(PIN_LED_WIFI_FEEDBACK, wiFiConnection.connected());
-
+  digitalWrite(PIN_LED_WIFI_FEEDBACK, wifi_connection.connected());
   delay(50);
 }
