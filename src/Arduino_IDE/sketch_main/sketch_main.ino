@@ -9,12 +9,15 @@
 */
 #include <ESP32Pinout.h>
 #include <WiFiConnection.h>
+#include <AlarmouseDevice.h>
 
 
 /*
   DEFINE - PIN
 */
 #define PIN_LED_WIFI_FEEDBACK D21
+#define PIN_SENSOR_HC_SR501 D5
+#define PIN_ALARM D18
 
 
 /*
@@ -55,6 +58,11 @@ void mqtt_connect_and_subscribe();
 void on_mqtt_message_callback(char*,byte*,unsigned int);
 
 
+AlarmouseDevice alarmouse = AlarmouseDevice(
+  PIN_SENSOR_HC_SR501,
+  PIN_ALARM
+);
+
 void setup()
 {
   Serial.begin(115200);
@@ -76,6 +84,7 @@ void loop()
       if (!MQTTClient.connected()) mqtt_connect_and_subscribe();
 
   MQTTClient.loop();
+  alarmouse.loop();
 
   digitalWrite(PIN_LED_WIFI_FEEDBACK, wifiConnection.connected());
 
