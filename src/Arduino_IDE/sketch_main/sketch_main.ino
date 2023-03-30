@@ -1,28 +1,59 @@
+/*
+  THIRD-PARTY LIBRARIES
+*/
 #include <PubSubClient.h>
 
+
+/*
+  CUSTOM LIBRARIES
+*/
 #include <ESP32Pinout.h>
 #include <WiFiConnection.h>
 
+
+/*
+  DEFINE - PIN
+*/
 #define PIN_LED_WIFI_FEEDBACK D21
 
+
+/*
+  DEFINE - CONFIG
+*/
 #define DEVICE_ESPTOUCHv2_PASSWORD "2893701982730182"
 
+
+/*
+  DEFINE - MQTT CREDENTIALS
+*/
 #define MQTT_HOST "MQTT_BROKER_HERE"
 #define MQTT_PORT MQTT_PORT_HERE
 #define MQTT_USER "MQTT_USER_HERE"
 #define MQTT_PASSWORD "MQTT_PASSWORD_HERE"
 #define MQTT_SECRET_HASH "MQTT_SECRET_HASH_HERE"
 
+
+/* 
+  DEFINE - MQTT TOPICS
+*/
 #define MQTT_TOPIC_CHANGE_DEVICE_STATUS(mac) ("/alarmouse/mqtt/se/" + String(MQTT_SECRET_HASH) + "/control/status/" + mac).c_str()
 
-bool wifi_configurated = false;
-WiFiConnection wifi_connection = WiFiConnection(DEVICE_ESPTOUCHv2_PASSWORD);
 
+/*
+  GLOBAL VARIABLES
+*/
+bool wifi_configurated = false;
+WiFiConnection wifiConnection = WiFiConnection(DEVICE_ESPTOUCHv2_PASSWORD);
 WiFiClient wiFiClient;
 PubSubClient MQTTClient(wiFiClient);
 
+
+/*
+  PROTOTYPES
+*/
 void mqtt_connect_and_subscribe();
 void on_mqtt_message_callback(char*,byte*,unsigned int);
+
 
 void setup()
 {
@@ -37,19 +68,20 @@ void setup()
 void loop()
 {
   if (!wifi_configurated)
-    wifi_configurated = wifi_connection.waitSmartConfig();
+    wifi_configurated = wifiConnection.waitSmartConfig();
   else 
-    if (!wifi_connection.connected()) 
-      wifi_connection.reconnect();
+    if (!wifiConnection.connected()) 
+      wifiConnection.reconnect();
     else 
       if (!MQTTClient.connected()) mqtt_connect_and_subscribe();
 
   MQTTClient.loop();
 
-  digitalWrite(PIN_LED_WIFI_FEEDBACK, wifi_connection.connected());
+  digitalWrite(PIN_LED_WIFI_FEEDBACK, wifiConnection.connected());
 
   delay(50);
 }
+
 
 void mqtt_connect_and_subscribe() {
   bool _connected = MQTTClient.connect(
@@ -60,7 +92,7 @@ void mqtt_connect_and_subscribe() {
 
   if (!_connected) return;
 
-  MQTTClient.subscribe(MQTT_TOPIC_CHANGE_DEVICE_STATUS(wifi_connection.getMacAddress()));
+  MQTTClient.subscribe(MQTT_TOPIC_CHANGE_DEVICE_STATUS(wifiConnection.getMacAddress()));
 }
 
 void on_mqtt_message_callback(char* topic, byte* payload, unsigned int size) {
