@@ -45,7 +45,6 @@
 /*
   GLOBAL VARIABLES
 */
-bool wifi_configurated = false;
 WiFiConnection wifiConnection = WiFiConnection(DEVICE_ESPTOUCHv2_PASSWORD);
 WiFiClient wiFiClient;
 PubSubClient MQTTClient(wiFiClient);
@@ -75,8 +74,8 @@ void setup()
 
 void loop()
 {
-  if (!wifi_configurated)
-    wifi_configurated = wifiConnection.waitSmartConfig();
+  if (!alarmouse.configurated())
+    alarmouse.setIsConfigurated(wifiConnection.waitSmartConfig());
   else 
     if (!wifiConnection.connected()) 
       wifiConnection.reconnect();

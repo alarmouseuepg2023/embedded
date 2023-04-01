@@ -3,3 +3,5 @@ statusChangedByExternal KEYWORD2
 loop                    KEYWORD2
 targetDetected          KEYWORD2
 changeStatus            KEYWORD2
+configurated            KEYWORD2
+setIsConfigurated       KEYWORD2

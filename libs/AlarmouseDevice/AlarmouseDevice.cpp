@@ -7,10 +7,20 @@ bool AlarmouseDevice::targetDetected() {
 AlarmouseDevice::AlarmouseDevice(int sensor, int alarm) {
   this->alarmPin = alarm;
   this->sensorPin = sensor;
-  this->status = DeviceStatus::UNLOCKED;
+  this->status = DeviceStatus::UNCONFIGURED;
 
   pinMode(this->sensorPin, INPUT);
   pinMode(this->alarmPin, OUTPUT);
+}
+
+bool AlarmouseDevice::configurated() {
+  return this->status != DeviceStatus::UNCONFIGURED;
+}
+
+void AlarmouseDevice::setIsConfigurated(bool wifiConfigurated) {
+  if (wifiConfigurated) this->status = DeviceStatus::UNLOCKED;
+
+  // publish mqtt
 }
 
 void AlarmouseDevice::statusChangedByExternal(byte status) {
