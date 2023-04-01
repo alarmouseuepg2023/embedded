@@ -19,8 +19,6 @@ bool AlarmouseDevice::configurated() {
 
 void AlarmouseDevice::setIsConfigurated(bool wifiConfigurated) {
   if (wifiConfigurated) this->status = DeviceStatus::UNLOCKED;
-
-  // publish mqtt
 }
 
 void AlarmouseDevice::statusChangedByExternal(byte status) {

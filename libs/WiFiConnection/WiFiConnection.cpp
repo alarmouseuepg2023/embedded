@@ -1,8 +1,9 @@
 #include "WiFiConnection.h"
 
 
-WiFiConnection::WiFiConnection(char* espTouchPassword) {
+WiFiConnection::WiFiConnection(char* espTouchPassword, void (*cb)(WiFiEvent_t)) {
 	this->espTouchPassword = espTouchPassword;
+	WiFi.onEvent(cb);
 }
 
 void WiFiConnection::connect() {
@@ -26,7 +27,7 @@ bool WiFiConnection::waitSmartConfig() {
 
 	if (!start_config) {
 		start_config = true;
-		WiFi.mode(WIFI_AP_STA);
+		WiFi.mode(WIFI_STA);
 		WiFi.beginSmartConfig(SC_TYPE_ESPTOUCH_V2, this->espTouchPassword);
 
 		free(this->ssid);

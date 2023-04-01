@@ -43,18 +43,22 @@
 
 
 /*
-  GLOBAL VARIABLES
-*/
-WiFiConnection wifiConnection = WiFiConnection(DEVICE_ESPTOUCHv2_PASSWORD);
-WiFiClient wiFiClient;
-PubSubClient MQTTClient(wiFiClient);
-
-
-/*
   PROTOTYPES
 */
 void mqtt_connect_and_subscribe();
+void on_wifi_event_callback(WiFiEvent_t);
 void on_mqtt_message_callback(char*,byte*,unsigned int);
+
+
+/*
+  GLOBAL VARIABLES
+*/
+WiFiConnection wifiConnection = WiFiConnection(
+  DEVICE_ESPTOUCHv2_PASSWORD,
+  on_wifi_event_callback
+);
+WiFiClient wiFiClient;
+PubSubClient MQTTClient(wiFiClient);
 
 
 AlarmouseDevice alarmouse = AlarmouseDevice(
@@ -111,4 +115,14 @@ void on_mqtt_message_callback(char* topic, byte* payload, unsigned int size) {
     Serial.print((char)payload[i]);
   }
   Serial.println();
+}
+
+void on_wifi_event_callback(WiFiEvent_t event) {
+  switch (event) {
+    case SYSTEM_EVENT_STA_GOT_IP:
+      uint8_t rvd_data[36] = { 0 };
+      esp_smartconfig_get_rvd_data(rvd_data, sizeof(rvd_data));
+      Serial.write(rvd_data, sizeof(rvd_data));
+      break;
+  }
 }

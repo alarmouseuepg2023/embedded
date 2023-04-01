@@ -19,7 +19,7 @@ protected:
   void connect();
 
 public:
-  WiFiConnection(char*);
+  WiFiConnection(char*, void (*)(WiFiEvent_t));
   bool connected();
 	String getMacAddress();
 	IPAddress getLocalIP();
