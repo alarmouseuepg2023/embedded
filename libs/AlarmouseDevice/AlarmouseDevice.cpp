@@ -37,8 +37,5 @@ void AlarmouseDevice::loop() {
     this->changeStatus(DeviceStatus::TRIGGERED);
 
   // temporary
-  if (this->status == DeviceStatus::TRIGGERED) 
-    tone(this->alarmPin, 262, 1000);
-  else
-    noTone(this->alarmPin);
+  digitalWrite(this->alarmPin, this->status == DeviceStatus::TRIGGERED);
 }
