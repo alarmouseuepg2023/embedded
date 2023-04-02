@@ -1,6 +1,7 @@
 /*
   THIRD-PARTY LIBRARIES
 */
+#include <stdarg.h>
 #include <PubSubClient.h>
 
 
@@ -35,12 +36,14 @@
 #define MQTT_USER "MQTT_USER_HERE"
 #define MQTT_PASSWORD "MQTT_PASSWORD_HERE"
 #define MQTT_SECRET_HASH "MQTT_SECRET_HASH_HERE"
+#define MQTT_PUBLIC_HASH "MQTT_PUBLIC_HASH_HERE"
 
 
 /* 
   DEFINE - MQTT TOPICS
 */
 #define MQTT_TOPIC_CHANGE_DEVICE_STATUS(mac) ("/alarmouse/mqtt/se/" + String(MQTT_SECRET_HASH) + "/control/status/" + mac).c_str()
+#define MQTT_TOPIC_CONFIGURE_DEVICE(user_id) ("/alarmouse/mqtt/em/" + String(MQTT_PUBLIC_HASH) + "/device/configure/" + user_id).c_str()
 
 
 /*
@@ -48,6 +51,7 @@
 */
 void mqtt_connect_and_subscribe();
 void on_wifi_event_callback(WiFiEvent_t);
+void publish_json(const char*,size_t,const char*,...);
 void on_mqtt_message_callback(char*,byte*,unsigned int);
 
 
@@ -67,8 +71,7 @@ AlarmouseDevice alarmouse = AlarmouseDevice(
   PIN_ALARM
 );
 
-void setup()
-{
+void setup() {
   Serial.begin(115200);
 
   MQTTClient.setServer(MQTT_HOST, MQTT_PORT);
@@ -77,8 +80,7 @@ void setup()
   pinMode(PIN_LED_WIFI_FEEDBACK, OUTPUT);
 }
 
-void loop()
-{
+void loop() {
   if (!alarmouse.configurated())
     alarmouse.setIsConfigurated(wifiConnection.waitSmartConfig());
   else 
@@ -118,13 +120,25 @@ void on_mqtt_message_callback(char* topic, byte* payload, unsigned int size) {
   Serial.println();
 }
 
+void publish_json(const char* topic, size_t max_size, const char* pattern, ...) {
+  char buffer[max_size];
+
+  va_list args;
+  va_start(args, pattern);
+
+  vsnprintf(buffer, sizeof(buffer), pattern, args);
+  buffer[sizeof(buffer) / sizeof(buffer[0]) - 1] = '\0';
+  
+  va_end(args);
+
+  MQTTClient.publish(topic, buffer);
+}
+
 void on_wifi_event_callback(WiFiEvent_t event) {
   switch (event) {
     case SYSTEM_EVENT_STA_GOT_IP:
-      uint8_t* rvd_data = malloc(UUID_V4_LENGTH * sizeof(uint8_t));
+      uint8_t rvd_data[UUID_V4_LENGTH + 1] = { 0 };
       esp_smartconfig_get_rvd_data(rvd_data, sizeof(rvd_data));
-      Serial.write(rvd_data, sizeof(rvd_data));
-      free(rvd_data);
       
       /*
         publish mqtt
