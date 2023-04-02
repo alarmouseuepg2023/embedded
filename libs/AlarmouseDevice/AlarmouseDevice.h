@@ -26,6 +26,7 @@ public:
   void loop();
   bool configurated();
   void setIsConfigurated(bool);
+  void resetConfig();
 };
 
 

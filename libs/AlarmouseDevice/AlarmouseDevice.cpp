@@ -21,6 +21,10 @@ void AlarmouseDevice::setIsConfigurated(bool wifiConfigurated) {
   if (wifiConfigurated) this->status = DeviceStatus::UNLOCKED;
 }
 
+void AlarmouseDevice::resetConfig() {
+  this->status = DeviceStatus::UNCONFIGURED;
+}
+
 void AlarmouseDevice::statusChangedByExternal(byte status) {
   if (status == 1) this->status = DeviceStatus::LOCKED;
   if (status == 2) this->status = DeviceStatus::UNLOCKED;
