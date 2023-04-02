@@ -44,12 +44,13 @@
   DEFINE - MQTT TOPICS
 */
 #define MQTT_TOPIC_CHANGE_DEVICE_STATUS(mac) ("/alarmouse/mqtt/se/" + String(MQTT_SECRET_HASH) + "/control/status/" + mac).c_str()
-#define MQTT_TOPIC_CONFIGURE_DEVICE(user_id) ("/alarmouse/mqtt/em/" + String(MQTT_PUBLIC_HASH) + "/device/configure/" + user_id).c_str()
+#define MQTT_TOPIC_CONFIGURE_DEVICE(id) ("/alarmouse/mqtt/em/" + String(MQTT_PUBLIC_HASH) + "/device/configure/" + String(id)).c_str()
 
 
 /*
   PROTOTYPES
 */
+bool is_uuid_v4(char*);
 void mqtt_connect_and_subscribe();
 void on_wifi_event_callback(WiFiEvent_t);
 void publish_json(const char*,size_t,const char*,...);
@@ -59,6 +60,8 @@ void on_mqtt_message_callback(char*,byte*,unsigned int);
 /*
   GLOBAL VARIABLES
 */
+char* owner_id = NULL;
+bool _publish_first_configuration = false;
 WiFiConnection wifiConnection = WiFiConnection(
   DEVICE_ESPTOUCHv2_PASSWORD,
   on_wifi_event_callback
@@ -90,6 +93,16 @@ void loop() {
       wifiConnection.reconnect();
     else 
       if (!MQTTClient.connected()) mqtt_connect_and_subscribe();
+
+  if (_publish_first_configuration && MQTTClient.connected()) {
+    publish_json(
+      MQTT_TOPIC_CONFIGURE_DEVICE(owner_id), 
+      35,
+      "{\"macAddress\":\"%s\"}",
+      wifiConnection.getMacAddress().c_str()
+    );
+    _publish_first_configuration = false;
+  }
 
   MQTTClient.loop();
   alarmouse.loop();
@@ -142,11 +155,35 @@ void on_wifi_event_callback(WiFiEvent_t event) {
     case SYSTEM_EVENT_STA_GOT_IP:
       uint8_t rvd_data[UUID_V4_LENGTH + 1] = { 0 };
       esp_smartconfig_get_rvd_data(rvd_data, sizeof(rvd_data));
-      
-      /*
-        publish mqtt
-        se nao for id valido, desconfigurar device e setar wifi como wait
-      */
+      owner_id = (char*) malloc(sizeof(char) * UUID_V4_LENGTH);
+      memcpy(owner_id, rvd_data, UUID_V4_LENGTH + 1);
+      if (is_uuid_v4(owner_id))
+        _publish_first_configuration = true;
+      else {
+        free(owner_id);
+        alarmouse.resetConfig();
+        wifiConnection.resetSmartConfig();
+        _publish_first_configuration = false;
+      }
       break;
   }
+}
+
+bool is_uuid_v4(char* uuid) {
+  if (strlen(uuid) != UUID_V4_LENGTH) return false;
+
+  if (uuid[14] != '4') return false;
+
+  if (uuid[8] != '-' || uuid[13] != '-' || uuid[18] != '-' || uuid[23] != '-')
+    return false;
+  
+  char c = uuid[19];
+  if (c != '8' && c != '9' && c != 'a' && c != 'b') return false;
+  
+  for (int i = 0; i < UUID_V4_LENGTH; i++) {
+    if (i == 8 || i == 13 || i == 18 || i == 23) continue; 
+    if (!isxdigit(uuid[i])) return false;
+  }
+  
+  return true;
 }
