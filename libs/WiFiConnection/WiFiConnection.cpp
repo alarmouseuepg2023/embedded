@@ -3,6 +3,7 @@
 
 WiFiConnection::WiFiConnection(char* espTouchPassword, void (*cb)(WiFiEvent_t)) {
 	this->espTouchPassword = espTouchPassword;
+	this->smartConfigStatus = SmartConfigStatus::WAITING;
 	WiFi.onEvent(cb);
 }
 
@@ -22,11 +23,17 @@ String WiFiConnection::getMacAddress() {
 	return WiFi.macAddress();
 }
 
-bool WiFiConnection::waitSmartConfig() {
-	static bool start_config = false;
+void WiFiConnection::resetSmartConfig() {
+	WiFi.disconnect();
+	free(this->ssid);
+	free(this->password);
+	this->smartConfigStatus = SmartConfigStatus::WAITING;
+}
 
-	if (!start_config) {
-		start_config = true;
+bool WiFiConnection::waitSmartConfig() {
+	if (this->smartConfigStatus == SmartConfigStatus::WAITING) {
+		this->smartConfigStatus = SmartConfigStatus::STARTED;
+
 		WiFi.mode(WIFI_STA);
 		WiFi.beginSmartConfig(SC_TYPE_ESPTOUCH_V2, this->espTouchPassword);
 
@@ -35,7 +42,7 @@ bool WiFiConnection::waitSmartConfig() {
 	}
 
 	if (WiFi.smartConfigDone()) {
-		start_config = false;
+		this->smartConfigStatus = SmartConfigStatus::FINISHED;
 
 		String _ssid = WiFi.SSID();
 		this->ssid = (char*) malloc(sizeof(char) * _ssid.length());

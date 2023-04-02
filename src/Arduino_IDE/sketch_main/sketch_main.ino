@@ -23,6 +23,7 @@
 /*
   DEFINE - CONFIG
 */
+#define UUID_V4_LENGTH 36
 #define DEVICE_ESPTOUCHv2_PASSWORD "2893701982730182"
 
 
@@ -120,9 +121,15 @@ void on_mqtt_message_callback(char* topic, byte* payload, unsigned int size) {
 void on_wifi_event_callback(WiFiEvent_t event) {
   switch (event) {
     case SYSTEM_EVENT_STA_GOT_IP:
-      uint8_t rvd_data[36] = { 0 };
+      uint8_t* rvd_data = malloc(UUID_V4_LENGTH * sizeof(uint8_t));
       esp_smartconfig_get_rvd_data(rvd_data, sizeof(rvd_data));
       Serial.write(rvd_data, sizeof(rvd_data));
+      free(rvd_data);
+      
+      /*
+        publish mqtt
+        se nao for id valido, desconfigurar device e setar wifi como wait
+      */
       break;
   }
 }

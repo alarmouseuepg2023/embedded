@@ -8,12 +8,19 @@
 #define PRINT_STATUS_IN_MS 2000
 
 
+enum SmartConfigStatus {
+  WAITING = 0,
+  STARTED = 1,
+  FINISHED = 2
+}
+
 class WiFiConnection : public ConnectionManager {
 
 private:
   char* ssid;
   char* password;
   char* espTouchPassword;
+  SmartConfigStatus smartConfigStatus;
 
 protected:
   void connect();
@@ -25,6 +32,7 @@ public:
 	IPAddress getLocalIP();
 	void printStatus();
   bool waitSmartConfig();
+  void resetSmartConfig();
 
 };
 
