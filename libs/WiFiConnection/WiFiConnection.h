@@ -12,7 +12,7 @@ enum SmartConfigStatus {
   WAITING = 0,
   STARTED = 1,
   FINISHED = 2
-}
+};
 
 class WiFiConnection : public ConnectionManager {
 
