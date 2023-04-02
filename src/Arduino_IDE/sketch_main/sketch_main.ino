@@ -17,6 +17,7 @@
   DEFINE - PIN
 */
 #define PIN_LED_WIFI_FEEDBACK D21
+#define PIN_LED_MQTT_FEEDBACK D19
 #define PIN_SENSOR_HC_SR501 D5
 #define PIN_ALARM D18
 
@@ -78,6 +79,7 @@ void setup() {
   MQTTClient.setCallback(on_mqtt_message_callback);
 
   pinMode(PIN_LED_WIFI_FEEDBACK, OUTPUT);
+  pinMode(PIN_LED_MQTT_FEEDBACK, OUTPUT);
 }
 
 void loop() {
@@ -93,6 +95,7 @@ void loop() {
   alarmouse.loop();
 
   digitalWrite(PIN_LED_WIFI_FEEDBACK, wifiConnection.connected());
+  digitalWrite(PIN_LED_MQTT_FEEDBACK, MQTTClient.connected());
 
   delay(50);
 }
