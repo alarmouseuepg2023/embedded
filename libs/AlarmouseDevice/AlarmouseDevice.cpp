@@ -4,10 +4,11 @@ bool AlarmouseDevice::targetDetected() {
   return !(digitalRead(this->sensorPin) == HIGH);
 }
 
-AlarmouseDevice::AlarmouseDevice(int sensor, int alarm) {
+AlarmouseDevice::AlarmouseDevice(int sensor, int alarm, void (*cb)(DeviceEvent event)) {
   this->alarmPin = alarm;
   this->sensorPin = sensor;
   this->status = DeviceStatus::UNCONFIGURED;
+  this->onEventCallback = cb;
 
   pinMode(this->sensorPin, INPUT);
   pinMode(this->alarmPin, OUTPUT);
@@ -33,7 +34,7 @@ void AlarmouseDevice::statusChangedByExternal(byte status) {
 
 void AlarmouseDevice::changeStatus(DeviceStatus status) {
   this->status = status;
-  // publish mqtt
+  this->onEventCallback(DeviceEvent::STATUS_CHANGED);
 }
 
 void AlarmouseDevice::loop() {
