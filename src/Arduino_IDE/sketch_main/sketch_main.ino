@@ -127,13 +127,12 @@ void mqtt_connect_and_subscribe() {
 }
 
 void on_mqtt_message_callback(char* topic, byte* payload, unsigned int size) {
-  Serial.print("[MSG RECEBIDA] Topico: ");
-  Serial.print(topic);
-  Serial.print(" / Mensagem: ");
-  for (int i = 0; i < size; i++) {
-    Serial.print((char)payload[i]);
+  if (
+    strcmp(topic, MQTT_TOPIC_CHANGE_DEVICE_STATUS(wifiConnection.getMacAddress())) == 0
+  ) {
+    alarmouse.statusChangedByExternal(payload[0]);
+    return;
   }
-  Serial.println();
 }
 
 void publish_json(const char* topic, size_t max_size, const char* pattern, ...) {
