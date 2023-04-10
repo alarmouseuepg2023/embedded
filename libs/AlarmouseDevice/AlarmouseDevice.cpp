@@ -1,9 +1,5 @@
 #include "AlarmouseDevice.h"
 
-bool AlarmouseDevice::targetDetected() {
-  return !(digitalRead(this->sensorPin) == HIGH);
-}
-
 AlarmouseDevice::AlarmouseDevice(int sensor, int alarm, void (*cb)(DeviceEvent event)) {
   this->alarmPin = alarm;
   this->sensorPin = sensor;
@@ -12,6 +8,14 @@ AlarmouseDevice::AlarmouseDevice(int sensor, int alarm, void (*cb)(DeviceEvent e
 
   pinMode(this->sensorPin, INPUT);
   pinMode(this->alarmPin, OUTPUT);
+}
+
+bool AlarmouseDevice::targetDetected() {
+  return !(digitalRead(this->sensorPin) == HIGH);
+}
+
+DeviceStatus AlarmouseDevice::getStatus() {
+  return this->status;
 }
 
 bool AlarmouseDevice::configurated() {

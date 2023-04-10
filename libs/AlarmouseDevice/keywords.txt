@@ -6,3 +6,4 @@ changeStatus            KEYWORD2
 configurated            KEYWORD2
 setIsConfigurated       KEYWORD2
 AlarmouseDevice         KEYWORD2
+getStatus               KEYWORD2

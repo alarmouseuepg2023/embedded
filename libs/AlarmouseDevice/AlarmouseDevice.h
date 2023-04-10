@@ -32,6 +32,7 @@ public:
   bool configurated();
   void setIsConfigurated(bool);
   void resetConfig();
+  DeviceStatus getStatus();
 };
 
 
