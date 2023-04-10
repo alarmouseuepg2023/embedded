@@ -13,7 +13,7 @@ enum DeviceStatus {
 
 enum DeviceEvent {
   STATUS_CHANGED = 0,
-}
+};
 
 class AlarmouseDevice {
 private:
