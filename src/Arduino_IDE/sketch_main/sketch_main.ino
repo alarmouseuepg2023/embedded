@@ -53,6 +53,7 @@
 bool is_uuid_v4(char*);
 void mqtt_connect_and_subscribe();
 void on_wifi_event_callback(WiFiEvent_t);
+void on_device_event_callback(DeviceEvent);
 void publish_json(const char*,size_t,const char*,...);
 void on_mqtt_message_callback(char*,byte*,unsigned int);
 
@@ -68,11 +69,10 @@ WiFiConnection wifiConnection = WiFiConnection(
 );
 WiFiClient wiFiClient;
 PubSubClient MQTTClient(wiFiClient);
-
-
 AlarmouseDevice alarmouse = AlarmouseDevice(
   PIN_SENSOR_HC_SR501,
-  PIN_ALARM
+  PIN_ALARM,
+  on_device_event_callback
 );
 
 void setup() {
@@ -185,4 +185,8 @@ bool is_uuid_v4(char* uuid) {
   }
   
   return true;
+}
+
+void on_device_event_callback(DeviceEvent event) {
+
 }
