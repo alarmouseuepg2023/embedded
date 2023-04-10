@@ -189,5 +189,14 @@ bool is_uuid_v4(char* uuid) {
 }
 
 void on_device_event_callback(DeviceEvent event) {
-
+  if (event == DeviceEvent::STATUS_CHANGED) {
+    publish_json(
+      MQTT_TOPIC_PUB_CHANGE_DEVICE_STATUS,
+      48,
+      "{\"macAddress\":\"%s\",\"status\":\"%d\"}",
+      wifiConnection.getMacAddress().c_str(),
+      alarmouse.getStatus()
+    );
+    return;
+  }
 }
