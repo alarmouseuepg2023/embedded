@@ -130,7 +130,7 @@ void on_mqtt_message_callback(char* topic, byte* payload, unsigned int size) {
   if (
     strcmp(topic, MQTT_TOPIC_CHANGE_DEVICE_STATUS(wifiConnection.getMacAddress())) == 0
   ) {
-    alarmouse.statusChangedByExternal(payload[0]);
+    alarmouse.statusChangedByExternal((char)payload[0]);
     return;
   }
 }

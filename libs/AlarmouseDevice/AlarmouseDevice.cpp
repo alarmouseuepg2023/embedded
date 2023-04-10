@@ -26,10 +26,12 @@ void AlarmouseDevice::resetConfig() {
   this->status = DeviceStatus::UNCONFIGURED;
 }
 
-void AlarmouseDevice::statusChangedByExternal(byte status) {
-  if (status == 1) this->status = DeviceStatus::LOCKED;
-  if (status == 2) this->status = DeviceStatus::UNLOCKED;
-  if (status == 3) this->status = DeviceStatus::TRIGGERED;
+void AlarmouseDevice::statusChangedByExternal(char status) {
+  int status_converted = atoi((char*)(&status));
+
+  if (status_converted == 1) this->status = DeviceStatus::LOCKED;
+  if (status_converted == 2) this->status = DeviceStatus::UNLOCKED;
+  if (status_converted == 3) this->status = DeviceStatus::TRIGGERED;
 }
 
 void AlarmouseDevice::changeStatus(DeviceStatus status) {

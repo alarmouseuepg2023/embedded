@@ -27,7 +27,7 @@ private:
 
 public:
   AlarmouseDevice(int,int,void (*)(DeviceEvent));
-  void statusChangedByExternal(byte);
+  void statusChangedByExternal(char);
   void loop();
   bool configurated();
   void setIsConfigurated(bool);
