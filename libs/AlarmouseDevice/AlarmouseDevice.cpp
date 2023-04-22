@@ -18,12 +18,14 @@ DeviceStatus AlarmouseDevice::getStatus() {
   return this->status;
 }
 
-bool AlarmouseDevice::configurated() {
-  return this->status != DeviceStatus::UNCONFIGURED;
+bool AlarmouseDevice::getHasWifiCredentials() {
+  return this->hasWifiCredentials;
 }
 
-void AlarmouseDevice::setIsConfigurated(bool wifiConfigurated) {
-  if (wifiConfigurated) this->status = DeviceStatus::UNLOCKED;
+void AlarmouseDevice::setHasWifiCredentials(bool hasWifiCredentials) {
+  this->hasWifiCredentials = hasWifiCredentials;
+  if (this->hasWifiCredentials && this->status == DeviceStatus::UNCONFIGURED)
+    this->status = DeviceStatus::UNLOCKED;
 }
 
 void AlarmouseDevice::resetConfig() {

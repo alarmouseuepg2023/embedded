@@ -87,8 +87,8 @@ void setup() {
 }
 
 void loop() {
-  if (!alarmouse.configurated())
-    alarmouse.setIsConfigurated(wifiConnection.waitSmartConfig());
+  if (!alarmouse.getHasWifiCredentials())
+    alarmouse.setHasWifiCredentials(wifiConnection.waitSmartConfig());
   else 
     if (!wifiConnection.connected()) 
       wifiConnection.reconnect();
