@@ -4,7 +4,7 @@
 
 #define D15 15
 #define D2 2
-#define D4 3
+#define D4 4
 #define RX2 16
 #define TX2 17
 #define D5 5
