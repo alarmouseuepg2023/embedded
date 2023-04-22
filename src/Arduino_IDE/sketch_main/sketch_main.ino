@@ -170,7 +170,7 @@ void on_wifi_event_callback(WiFiEvent_t event) {
         _publish_first_configuration = true;
       else {
         free(owner_id);
-        alarmouse.resetConfig();
+        alarmouse.setHasWifiCredentials(false);
         wifiConnection.resetSmartConfig();
         _publish_first_configuration = false;
       }

@@ -32,7 +32,6 @@ public:
   void loop();
   bool getHasWifiCredentials();
   void setHasWifiCredentials(bool);
-  void resetConfig();
   DeviceStatus getStatus();
 };
 
