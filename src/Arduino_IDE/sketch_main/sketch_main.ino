@@ -8,6 +8,7 @@
 /*
   CUSTOM LIBRARIES
 */
+#include <Debounce.h>
 #include <ESP32Pinout.h>
 #include <WiFiConnection.h>
 #include <AlarmouseDevice.h>
@@ -16,10 +17,11 @@
 /*
   DEFINE - PIN
 */
+#define PIN_BTN_RESET_WIFI D18
 #define PIN_LED_WIFI_FEEDBACK D21
 #define PIN_LED_MQTT_FEEDBACK D19
-#define PIN_SENSOR_HC_SR501 D5
-#define PIN_ALARM D18
+#define PIN_SENSOR_HC_SR501 D2
+#define PIN_ALARM D4
 
 
 /*
@@ -53,6 +55,7 @@
 */
 bool is_uuid_v4(char*);
 void mqtt_connect_and_subscribe();
+void on_btn_reset_wifi_callback();
 void on_wifi_event_callback(WiFiEvent_t);
 void on_device_event_callback(DeviceEvent);
 void publish_json(const char*,size_t,const char*,...);
@@ -74,6 +77,11 @@ AlarmouseDevice alarmouse = AlarmouseDevice(
   PIN_SENSOR_HC_SR501,
   PIN_ALARM,
   on_device_event_callback
+);
+Debounce btnResetWifi = Debounce(
+  PIN_BTN_RESET_WIFI,
+  3000,
+  on_btn_reset_wifi_callback
 );
 
 void setup() {
@@ -105,6 +113,7 @@ void loop() {
     _publish_first_configuration = false;
   }
 
+  btnResetWifi.loop();
   MQTTClient.loop();
   alarmouse.loop();
 
@@ -199,4 +208,9 @@ void on_device_event_callback(DeviceEvent event) {
     );
     return;
   }
+}
+
+void on_btn_reset_wifi_callback() {
+  alarmouse.setHasWifiCredentials(false);
+  wifiConnection.resetSmartConfig();
 }
