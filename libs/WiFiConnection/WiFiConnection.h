@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 #include <WiFi.h>
+#include <Preferences.h>
 #include <ConnectionManager.h>
 
 #define PRINT_STATUS_IN_MS 2000
@@ -20,6 +21,8 @@ private:
   char* ssid;
   char* password;
   char* espTouchPassword;
+  bool hasWifiCredentials;
+  Preferences preferences;
   SmartConfigStatus smartConfigStatus;
 
 protected:
@@ -33,6 +36,8 @@ public:
 	void printStatus();
   bool waitSmartConfig();
   void resetSmartConfig();
+  void setup();
+  bool getHasWifiCredentials();
 
 };
 

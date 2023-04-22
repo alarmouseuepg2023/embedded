@@ -87,6 +87,8 @@ Debounce btnResetWifi = Debounce(
 void setup() {
   Serial.begin(115200);
 
+  wifiConnection.setup();
+
   MQTTClient.setServer(MQTT_HOST, MQTT_PORT);
   MQTTClient.setCallback(on_mqtt_message_callback);
 
@@ -95,8 +97,8 @@ void setup() {
 }
 
 void loop() {
-  if (!alarmouse.getHasWifiCredentials())
-    alarmouse.setHasWifiCredentials(wifiConnection.waitSmartConfig());
+  if (!wifiConnection.getHasWifiCredentials())
+    wifiConnection.waitSmartConfig();
   else 
     if (!wifiConnection.connected()) 
       wifiConnection.reconnect();
@@ -170,7 +172,6 @@ void on_wifi_event_callback(WiFiEvent_t event) {
         _publish_first_configuration = true;
       else {
         free(owner_id);
-        alarmouse.setHasWifiCredentials(false);
         wifiConnection.resetSmartConfig();
         _publish_first_configuration = false;
       }
@@ -211,6 +212,6 @@ void on_device_event_callback(DeviceEvent event) {
 }
 
 void on_btn_reset_wifi_callback() {
-  alarmouse.setHasWifiCredentials(false);
+  MQTTClient.disconnect();
   wifiConnection.resetSmartConfig();
 }

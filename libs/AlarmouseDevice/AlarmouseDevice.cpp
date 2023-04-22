@@ -18,16 +18,6 @@ DeviceStatus AlarmouseDevice::getStatus() {
   return this->status;
 }
 
-bool AlarmouseDevice::getHasWifiCredentials() {
-  return this->hasWifiCredentials;
-}
-
-void AlarmouseDevice::setHasWifiCredentials(bool hasWifiCredentials) {
-  this->hasWifiCredentials = hasWifiCredentials;
-  if (this->hasWifiCredentials && this->status == DeviceStatus::UNCONFIGURED)
-    this->status = DeviceStatus::UNLOCKED;
-}
-
 void AlarmouseDevice::statusChangedByExternal(char status) {
   int status_converted = atoi((char*)(&status));
 

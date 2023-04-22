@@ -20,7 +20,6 @@ private:
   DeviceStatus status;
   unsigned int sensorPin;
   unsigned int alarmPin;
-  bool hasWifiCredentials;
   void (*onEventCallback)(DeviceEvent);
 
   bool targetDetected();
@@ -30,8 +29,6 @@ public:
   AlarmouseDevice(int,int,void (*)(DeviceEvent));
   void statusChangedByExternal(char);
   void loop();
-  bool getHasWifiCredentials();
-  void setHasWifiCredentials(bool);
   DeviceStatus getStatus();
 };
 

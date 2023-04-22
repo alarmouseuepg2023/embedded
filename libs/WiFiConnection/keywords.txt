@@ -5,3 +5,4 @@ getMacAddress               KEYWORD2
 getLocalIP                  KEYWORD2
 waitSmartConfig             KEYWORD2
 resetSmartConfig            KEYWORD2
+getHasWifiCredentials       KEYWORD2

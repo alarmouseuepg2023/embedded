@@ -3,7 +3,5 @@ statusChangedByExternal KEYWORD2
 loop                    KEYWORD2
 targetDetected          KEYWORD2
 changeStatus            KEYWORD2
-getHasWifiCredentials   KEYWORD2
-setHasWifiCredentials   KEYWORD2
 AlarmouseDevice         KEYWORD2
 getStatus               KEYWORD2
