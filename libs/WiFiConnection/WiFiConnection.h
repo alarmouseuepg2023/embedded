@@ -11,6 +11,8 @@
 #define PREF_SSID "ssid"
 #define PREF_PASSWORD "password"
 #define PREF_CONFIGURATED "configurated"
+#define WIFI_PREF_SAVED 1
+#define WIFI_PREF_UNSAVED 0
 
 
 enum SmartConfigStatus {
@@ -27,6 +29,8 @@ private:
   char* espTouchPassword;
   Preferences preferences;
   SmartConfigStatus smartConfigStatus;
+
+  void updateWifiCredentialsSaved(int,String="",String="");
 
 protected:
   void connect();
