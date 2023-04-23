@@ -7,6 +7,10 @@
 #include <ConnectionManager.h>
 
 #define PRINT_STATUS_IN_MS 2000
+#define PREF_NAMESPACE "alarmouse"
+#define PREF_SSID "ssid"
+#define PREF_PASSWORD "password"
+#define PREF_CONFIGURATED "configurated"
 
 
 enum SmartConfigStatus {
