@@ -30,6 +30,7 @@ private:
   Preferences preferences;
   SmartConfigStatus smartConfigStatus;
 
+  void copyCredentials(String,String);
   void updateWifiCredentialsSaved(int,String="",String="");
 
 protected:

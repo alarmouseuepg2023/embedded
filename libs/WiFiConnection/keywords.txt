@@ -6,3 +6,4 @@ waitSmartConfig             KEYWORD2
 resetSmartConfig            KEYWORD2
 hasWifiCredentialsSaved     KEYWORD2
 updateWifiCredentialsSaved  KEYWORD2
+copyCredentials             KEYWORD2

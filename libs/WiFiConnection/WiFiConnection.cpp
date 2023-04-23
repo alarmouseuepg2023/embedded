@@ -7,17 +7,28 @@ WiFiConnection::WiFiConnection(char* espTouchPassword, void (*cb)(WiFiEvent_t)) 
 	WiFi.onEvent(cb);
 }
 
-void WiFiConnection::updateWifiCredentialsSaved(int config, String ssid, String password) {
+void WiFiConnection::updateWifiCredentialsSaved(int config, String _ssid, String _password) {
 	this->preferences.putUInt(PREF_CONFIGURATED, config);
 
 	if (config == WIFI_PREF_SAVED) {
-		this->preferences.putString(PREF_SSID, ssid);
-		this->preferences.putString(PREF_PASSWORD, password);
+		this->preferences.putString(PREF_SSID, _ssid);
+		this->preferences.putString(PREF_PASSWORD, _password);
 	}
 	else {
 		this->preferences.remove(PREF_SSID);
 		this->preferences.remove(PREF_PASSWORD);
 	}
+}
+
+void WiFiConnection::copyCredentials(String _ssid, String _password) {
+	if (this->ssid != NULL) free(this->ssid);
+	if (this->password != NULL) free(this->password);
+
+	this->ssid = (char*) malloc(sizeof(char) * _ssid.length());
+	strcpy(this->ssid, _ssid.c_str());
+	
+	this->password = (char*) malloc(sizeof(char) * _password.length());
+	strcpy(this->password, _password.c_str());
 }
 
 void WiFiConnection::setup() {
@@ -26,13 +37,10 @@ void WiFiConnection::setup() {
   if (this->hasWifiCredentialsSaved()) {
 		this->smartConfigStatus = SmartConfigStatus::FINISHED;
 
-		String ssid_saved = this->preferences.getString(PREF_SSID);
-		this->ssid = (char*) malloc(sizeof(char) * ssid_saved.length());
-		strcpy(this->ssid, ssid_saved.c_str());
-		
-		String password_saved = this->preferences.getString(PREF_PASSWORD);
-		this->password = (char*) malloc(sizeof(char) * password_saved.length());
-		strcpy(this->password, password_saved.c_str());
+		this->copyCredentials(
+			this->preferences.getString(PREF_SSID),
+			this->preferences.getString(PREF_PASSWORD)
+		);
   }
 }
 
@@ -69,22 +77,14 @@ bool WiFiConnection::waitSmartConfig() {
 
 		WiFi.mode(WIFI_AP_STA);
 		WiFi.beginSmartConfig(SC_TYPE_ESPTOUCH_V2, this->espTouchPassword);
-
-		free(this->ssid);
-		free(this->password);
 	}
 
 	if (WiFi.smartConfigDone()) {
-		this->smartConfigStatus = SmartConfigStatus::FINISHED;
-
 		String _ssid = WiFi.SSID();
-		this->ssid = (char*) malloc(sizeof(char) * _ssid.length());
-		strcpy(this->ssid, _ssid.c_str());
-
 		String _password = WiFi.psk();
-		this->password = (char*) malloc(sizeof(char) * _password.length());
-		strcpy(this->password, _password.c_str());
 
+		this->smartConfigStatus = SmartConfigStatus::FINISHED;
+		this->copyCredentials(_ssid, _password);
 		this->updateWifiCredentialsSaved(
 			WIFI_PREF_SAVED, _ssid, _password
 		);
