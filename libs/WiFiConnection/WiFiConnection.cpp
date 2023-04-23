@@ -83,16 +83,3 @@ bool WiFiConnection::waitSmartConfig() {
 
 	return false;
 }
-
-void WiFiConnection::printStatus() {
-	static unsigned long lmillis = millis();
-	
-	if ((millis() - lmillis) >= PRINT_STATUS_IN_MS) {
-		Serial.println("=====================================");
-		Serial.print("Status da conexão wi-fi: ");
-		Serial.println(this->connected()? "CONECTADO" : "DESCONECTADO");
-		Serial.println("=====================================");
-		
-		lmillis = millis();
-	}
-}

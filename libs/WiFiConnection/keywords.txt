@@ -1,6 +1,5 @@
 WiFiConnection              KEYWORD1
 connected                   KEYWORD2
-printStatus                 KEYWORD2
 getMacAddress               KEYWORD2
 getLocalIP                  KEYWORD2
 waitSmartConfig             KEYWORD2

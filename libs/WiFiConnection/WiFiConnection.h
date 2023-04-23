@@ -36,7 +36,6 @@ public:
   bool connected();
 	String getMacAddress();
 	IPAddress getLocalIP();
-	void printStatus();
   bool waitSmartConfig();
   void resetSmartConfig();
   void setup();
