@@ -21,7 +21,6 @@ private:
   char* ssid;
   char* password;
   char* espTouchPassword;
-  bool hasWifiCredentials;
   Preferences preferences;
   SmartConfigStatus smartConfigStatus;
 
@@ -37,7 +36,7 @@ public:
   bool waitSmartConfig();
   void resetSmartConfig();
   void setup();
-  bool getHasWifiCredentials();
+  bool hasWifiCredentialsSaved();
 
 };
 

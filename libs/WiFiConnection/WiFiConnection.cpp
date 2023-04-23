@@ -2,7 +2,6 @@
 
 
 WiFiConnection::WiFiConnection(char* espTouchPassword, void (*cb)(WiFiEvent_t)) {
-	this->hasWifiCredentials = false;
 	this->espTouchPassword = espTouchPassword;
 	this->smartConfigStatus = SmartConfigStatus::WAITING;
 	WiFi.onEvent(cb);
@@ -12,9 +11,7 @@ void WiFiConnection::setup() {
 	this->preferences.begin("alarmouse");
 	this->preferences.clear();
 
-  if (this->preferences.getUInt("configurated") == 1) {
-		this->hasWifiCredentials = true;
-
+  if (this->hasWifiCredentialsSaved()) {
 		String _ssid = this->preferences.getString("ssid");
 		this->ssid = (char*) malloc(sizeof(char) * _ssid.length());
 		strcpy(this->ssid, _ssid.c_str());
@@ -29,8 +26,8 @@ void WiFiConnection::connect() {
   WiFi.begin(this->ssid, this->password);
 }
 
-bool WiFiConnection::getHasWifiCredentials() {
-  return this->hasWifiCredentials;
+bool WiFiConnection::hasWifiCredentialsSaved() {
+  return this->preferences.getUInt("configurated") == 1;
 }
 
 bool WiFiConnection::connected() {
@@ -46,17 +43,15 @@ String WiFiConnection::getMacAddress() {
 }
 
 void WiFiConnection::resetSmartConfig() {
-	WiFi.disconnect();
-	this->hasWifiCredentials = false;
 	this->preferences.putUInt("configurated", 0);
-	free(this->ssid);
-	free(this->password);
-	this->smartConfigStatus = SmartConfigStatus::WAITING;
+	this->preferences.remove("ssid");
+	this->preferences.remove("password");
+	this->preferences.end();
+	ESP.restart();
 }
 
 bool WiFiConnection::waitSmartConfig() {
 	if (this->smartConfigStatus == SmartConfigStatus::WAITING) {
-		this->hasWifiCredentials = false;
 		this->smartConfigStatus = SmartConfigStatus::STARTED;
 
 		WiFi.mode(WIFI_AP_STA);
@@ -67,7 +62,6 @@ bool WiFiConnection::waitSmartConfig() {
 	}
 
 	if (WiFi.smartConfigDone()) {
-		this->hasWifiCredentials = true;
 		this->smartConfigStatus = SmartConfigStatus::FINISHED;
 
 		String _ssid = WiFi.SSID();

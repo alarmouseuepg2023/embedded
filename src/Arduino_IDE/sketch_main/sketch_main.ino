@@ -97,7 +97,7 @@ void setup() {
 }
 
 void loop() {
-  if (!wifiConnection.getHasWifiCredentials())
+  if (!wifiConnection.hasWifiCredentialsSaved())
     wifiConnection.waitSmartConfig();
   else 
     if (!wifiConnection.connected()) 
@@ -212,6 +212,5 @@ void on_device_event_callback(DeviceEvent event) {
 }
 
 void on_btn_reset_wifi_callback() {
-  MQTTClient.disconnect();
   wifiConnection.resetSmartConfig();
 }
