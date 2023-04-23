@@ -9,20 +9,22 @@ WiFiConnection::WiFiConnection(char* espTouchPassword, void (*cb)(WiFiEvent_t)) 
 
 void WiFiConnection::setup() {
 	this->preferences.begin("alarmouse");
-	this->preferences.clear();
 
   if (this->hasWifiCredentialsSaved()) {
-		String _ssid = this->preferences.getString("ssid");
-		this->ssid = (char*) malloc(sizeof(char) * _ssid.length());
-		strcpy(this->ssid, _ssid.c_str());
+		this->smartConfigStatus = SmartConfigStatus::FINISHED;
+
+		String ssid_saved = this->preferences.getString("ssid");
+		this->ssid = (char*) malloc(sizeof(char) * ssid_saved.length());
+		strcpy(this->ssid, ssid_saved.c_str());
 		
-		String _password = this->preferences.getString("password");
-		this->password = (char*) malloc(sizeof(char) * _password.length());
-		strcpy(this->password, _password.c_str());
+		String password_saved = this->preferences.getString("password");
+		this->password = (char*) malloc(sizeof(char) * password_saved.length());
+		strcpy(this->password, password_saved.c_str());
   }
 }
 
 void WiFiConnection::connect() {
+	WiFi.mode(WIFI_STA);
   WiFi.begin(this->ssid, this->password);
 }
 
