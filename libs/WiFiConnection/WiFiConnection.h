@@ -6,6 +6,7 @@
 #include <Preferences.h>
 #include <ConnectionManager.h>
 
+#define USE_FLASH_MEMORY 0
 #define PRINT_STATUS_IN_MS 2000
 #define PREF_NAMESPACE "alarmouse"
 #define PREF_SSID "ssid"

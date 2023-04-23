@@ -7,7 +7,23 @@ WiFiConnection::WiFiConnection(char* espTouchPassword, void (*cb)(WiFiEvent_t)) 
 	WiFi.onEvent(cb);
 }
 
+void WiFiConnection::setup() {
+#if USE_FLASH_MEMORY
+	this->preferences.begin(PREF_NAMESPACE);
+
+  if (this->hasWifiCredentialsSaved()) {
+		this->smartConfigStatus = SmartConfigStatus::FINISHED;
+
+		this->copyCredentials(
+			this->preferences.getString(PREF_SSID),
+			this->preferences.getString(PREF_PASSWORD)
+		);
+  }
+#endif
+}
+
 void WiFiConnection::updateWifiCredentialsSaved(int config, String _ssid, String _password) {
+#if USE_FLASH_MEMORY
 	this->preferences.putUInt(PREF_CONFIGURATED, config);
 
 	if (config == WIFI_PREF_SAVED) {
@@ -18,6 +34,7 @@ void WiFiConnection::updateWifiCredentialsSaved(int config, String _ssid, String
 		this->preferences.remove(PREF_SSID);
 		this->preferences.remove(PREF_PASSWORD);
 	}
+#endif
 }
 
 void WiFiConnection::copyCredentials(String _ssid, String _password) {
@@ -31,26 +48,17 @@ void WiFiConnection::copyCredentials(String _ssid, String _password) {
 	strcpy(this->password, _password.c_str());
 }
 
-void WiFiConnection::setup() {
-	this->preferences.begin(PREF_NAMESPACE);
-
-  if (this->hasWifiCredentialsSaved()) {
-		this->smartConfigStatus = SmartConfigStatus::FINISHED;
-
-		this->copyCredentials(
-			this->preferences.getString(PREF_SSID),
-			this->preferences.getString(PREF_PASSWORD)
-		);
-  }
-}
-
 void WiFiConnection::connect() {
 	WiFi.mode(WIFI_STA);
   WiFi.begin(this->ssid, this->password);
 }
 
 bool WiFiConnection::hasWifiCredentialsSaved() {
+#if USE_FLASH_MEMORY
   return this->preferences.getUInt(PREF_CONFIGURATED) == WIFI_PREF_SAVED;
+#else
+	return this->connected();
+#endif
 }
 
 bool WiFiConnection::connected() {
@@ -67,7 +75,9 @@ String WiFiConnection::getMacAddress() {
 
 void WiFiConnection::resetSmartConfig() {
 	this->updateWifiCredentialsSaved(WIFI_PREF_UNSAVED);
+#if USE_FLASH_MEMORY
 	this->preferences.end();
+#endif
 	ESP.restart();
 }
 
