@@ -4,14 +4,17 @@
 WiFiConnection::WiFiConnection(char* espTouchPassword, void (*cb)(WiFiEvent_t)) {
 	this->espTouchPassword = espTouchPassword;
 	this->smartConfigStatus = SmartConfigStatus::WAITING;
+
+	WiFi.disconnect(true);
 	WiFi.onEvent(cb);
 }
 
 void WiFiConnection::setup() {
 #if USE_FLASH_MEMORY
 	this->preferences.begin(PREF_NAMESPACE);
-
-  if (this->hasWifiCredentialsSaved()) {
+	this->hasWifiCredentialsSaved = this->preferences.getUInt(PREF_CONFIGURATED) == WIFI_PREF_SAVED;
+	
+  if (this->hasWifiCredentials()) {
 		this->smartConfigStatus = SmartConfigStatus::FINISHED;
 
 		this->copyCredentials(
@@ -19,18 +22,22 @@ void WiFiConnection::setup() {
 			this->preferences.getString(PREF_PASSWORD)
 		);
   }
+#else
+	this->hasWifiCredentialsSaved = false;
 #endif
 }
 
-void WiFiConnection::updateWifiCredentialsSaved(int config, String _ssid, String _password) {
+void WiFiConnection::updateWifiCredentialsSaved(unsigned int config, String _ssid, String _password) {
 #if USE_FLASH_MEMORY
 	this->preferences.putUInt(PREF_CONFIGURATED, config);
 
 	if (config == WIFI_PREF_SAVED) {
+		this->hasWifiCredentialsSaved = true;
 		this->preferences.putString(PREF_SSID, _ssid);
 		this->preferences.putString(PREF_PASSWORD, _password);
 	}
 	else {
+		this->hasWifiCredentialsSaved = false;
 		this->preferences.remove(PREF_SSID);
 		this->preferences.remove(PREF_PASSWORD);
 	}
@@ -53,9 +60,9 @@ void WiFiConnection::connect() {
   WiFi.begin(this->ssid, this->password);
 }
 
-bool WiFiConnection::hasWifiCredentialsSaved() {
+bool WiFiConnection::hasWifiCredentials() {
 #if USE_FLASH_MEMORY
-  return this->preferences.getUInt(PREF_CONFIGURATED) == WIFI_PREF_SAVED;
+  return this->hasWifiCredentialsSaved;
 #else
 	return this->connected();
 #endif

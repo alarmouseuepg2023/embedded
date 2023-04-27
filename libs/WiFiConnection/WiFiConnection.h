@@ -28,11 +28,12 @@ private:
   char* ssid;
   char* password;
   char* espTouchPassword;
+  bool hasWifiCredentialsSaved;
   Preferences preferences;
   SmartConfigStatus smartConfigStatus;
 
   void copyCredentials(String,String);
-  void updateWifiCredentialsSaved(int,String="",String="");
+  void updateWifiCredentialsSaved(unsigned int,String="",String="");
 
 protected:
   void connect();
@@ -45,7 +46,7 @@ public:
   bool waitSmartConfig();
   void resetSmartConfig();
   void setup();
-  bool hasWifiCredentialsSaved();
+  bool hasWifiCredentials();
 
 };
 

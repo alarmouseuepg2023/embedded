@@ -97,7 +97,7 @@ void setup() {
 }
 
 void loop() {
-  if (!wifiConnection.hasWifiCredentialsSaved())
+  if (!wifiConnection.hasWifiCredentials())
     wifiConnection.waitSmartConfig();
   else 
     if (!wifiConnection.connected()) 
@@ -162,20 +162,19 @@ void publish_json(const char* topic, size_t max_size, const char* pattern, ...) 
 }
 
 void on_wifi_event_callback(WiFiEvent_t event) {
-  switch (event) {
-    case SYSTEM_EVENT_STA_GOT_IP:
-      uint8_t rvd_data[UUID_V4_LENGTH + 1] = { 0 };
-      esp_smartconfig_get_rvd_data(rvd_data, sizeof(rvd_data));
-      owner_id = (char*) malloc(sizeof(char) * UUID_V4_LENGTH);
-      memcpy(owner_id, rvd_data, UUID_V4_LENGTH + 1);
-      if (is_uuid_v4(owner_id))
-        _publish_first_configuration = true;
-      else {
-        free(owner_id);
-        wifiConnection.resetSmartConfig();
-        _publish_first_configuration = false;
-      }
-      break;
+  if (!wifiConnection.hasWifiCredentials() && event == SYSTEM_EVENT_STA_GOT_IP) {
+    uint8_t rvd_data[UUID_V4_LENGTH + 1] = { 0 };
+    esp_smartconfig_get_rvd_data(rvd_data, sizeof(rvd_data));
+    owner_id = (char*) malloc(sizeof(char) * UUID_V4_LENGTH);
+    memcpy(owner_id, rvd_data, UUID_V4_LENGTH + 1);
+    if (is_uuid_v4(owner_id))
+      _publish_first_configuration = true;
+    else {
+      free(owner_id);
+      wifiConnection.resetSmartConfig();
+      _publish_first_configuration = false;
+    }
+    return;
   }
 }
 
