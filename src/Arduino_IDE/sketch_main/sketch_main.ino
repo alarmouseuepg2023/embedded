@@ -47,6 +47,7 @@
 */
 #define MQTT_TOPIC_PUB_CHANGE_DEVICE_STATUS ("/alarmouse/mqtt/es/" + String(MQTT_SECRET_HASH) + "/control/status").c_str()
 #define MQTT_TOPIC_SUB_CHANGE_DEVICE_STATUS(mac) ("/alarmouse/mqtt/se/" + String(MQTT_SECRET_HASH) + "/control/status/" + mac).c_str()
+#define MQTT_TOPIC_ERROR_AT_CREATE_DEVICE(mac) ("/alarmouse/mqtt/se/" + String(MQTT_SECRET_HASH) + "/control/error/create_device/" + mac).c_str()
 #define MQTT_TOPIC_CONFIGURE_DEVICE(id) ("/alarmouse/mqtt/em/" + String(MQTT_PUBLIC_HASH) + "/device/configure/" + String(id)).c_str()
 
 
@@ -136,14 +137,22 @@ void mqtt_connect_and_subscribe() {
 
   if (!_connected) return;
 
-  MQTTClient.subscribe(MQTT_TOPIC_SUB_CHANGE_DEVICE_STATUS(wifiConnection.getMacAddress()));
+  MQTTClient.subscribe(MQTT_TOPIC_SUB_CHANGE_DEVICE_STATUS(macAddress));
+  MQTTClient.subscribe(MQTT_TOPIC_ERROR_AT_CREATE_DEVICE(macAddress));
 }
 
 void on_mqtt_message_callback(char* topic, byte* payload, unsigned int size) {
   if (
-    strcmp(topic, MQTT_TOPIC_SUB_CHANGE_DEVICE_STATUS(wifiConnection.getMacAddress())) == 0
+    strcmp(topic, MQTT_TOPIC_SUB_CHANGE_DEVICE_STATUS(macAddress)) == 0
   ) {
     alarmouse.statusChangedByExternal((char)payload[0]);
+    return;
+  }
+
+  if (
+    strcmp(topic, MQTT_TOPIC_ERROR_AT_CREATE_DEVICE(macAddress)) == 0
+  ) {
+    wifiConnection.resetSmartConfig();
     return;
   }
 }
