@@ -65,6 +65,7 @@ void on_mqtt_message_callback(char*,byte*,unsigned int);
 /*
   GLOBAL VARIABLES
 */
+String macAddress = "";
 char* owner_id = NULL;
 bool _publish_first_configuration = false;
 WiFiConnection wifiConnection = WiFiConnection(
@@ -162,18 +163,19 @@ void publish_json(const char* topic, size_t max_size, const char* pattern, ...) 
 }
 
 void on_wifi_event_callback(WiFiEvent_t event) {
-  if (!wifiConnection.hasWifiCredentials() && event == SYSTEM_EVENT_STA_GOT_IP) {
+  if (event == SYSTEM_EVENT_STA_GOT_IP) {
+    macAddress = wifiConnection.getMacAddress();
+    
+    if (USE_FLASH_MEMORY) return;
+
     uint8_t rvd_data[UUID_V4_LENGTH + 1] = { 0 };
     esp_smartconfig_get_rvd_data(rvd_data, sizeof(rvd_data));
     owner_id = (char*) malloc(sizeof(char) * UUID_V4_LENGTH);
     memcpy(owner_id, rvd_data, UUID_V4_LENGTH + 1);
-    if (is_uuid_v4(owner_id))
-      _publish_first_configuration = true;
-    else {
-      free(owner_id);
-      wifiConnection.resetSmartConfig();
-      _publish_first_configuration = false;
-    }
+    
+    if (is_uuid_v4(owner_id)) _publish_first_configuration = true;
+    else wifiConnection.resetSmartConfig();
+    
     return;
   }
 }
