@@ -12,6 +12,7 @@
 #include <ESP32Pinout.h>
 #include <WiFiConnection.h>
 #include <AlarmouseDevice.h>
+#include <MQTTCredentials.h>
 
 
 /*
@@ -29,17 +30,6 @@
 */
 #define UUID_V4_LENGTH 36
 #define DEVICE_ESPTOUCHv2_PASSWORD "2893701982730182"
-
-
-/*
-  DEFINE - MQTT CREDENTIALS
-*/
-#define MQTT_HOST "MQTT_BROKER_HERE"
-#define MQTT_PORT MQTT_PORT_HERE
-#define MQTT_USER "MQTT_USER_HERE"
-#define MQTT_PASSWORD "MQTT_PASSWORD_HERE"
-#define MQTT_SECRET_HASH "MQTT_SECRET_HASH_HERE"
-#define MQTT_PUBLIC_HASH "MQTT_PUBLIC_HASH_HERE"
 
 
 /* 
