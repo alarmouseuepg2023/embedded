@@ -20,13 +20,14 @@ private:
   DeviceStatus status;
   unsigned int sensorPin;
   unsigned int alarmPin;
+  unsigned int rfControlPin;
   void (*onEventCallback)(DeviceEvent);
 
   bool targetDetected();
   void changeStatus(DeviceStatus);
 
 public:
-  AlarmouseDevice(int,int,void (*)(DeviceEvent));
+  AlarmouseDevice(int,int,int,void (*)(DeviceEvent));
   void statusChangedByExternal(char);
   void loop();
   DeviceStatus getStatus();

@@ -23,6 +23,7 @@
 #define PIN_LED_MQTT_FEEDBACK D19
 #define PIN_SENSOR_HC_SR501 D2
 #define PIN_ALARM D4
+#define PIN_RF_CONTROL D5
 
 
 /*
@@ -70,6 +71,7 @@ PubSubClient MQTTClient(wiFiClient);
 AlarmouseDevice alarmouse = AlarmouseDevice(
   PIN_SENSOR_HC_SR501,
   PIN_ALARM,
+  PIN_RF_CONTROL,
   on_device_event_callback
 );
 Debounce btnResetWifi = Debounce(

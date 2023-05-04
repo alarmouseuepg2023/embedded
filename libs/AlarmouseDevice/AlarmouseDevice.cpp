@@ -1,13 +1,17 @@
 #include "AlarmouseDevice.h"
 
-AlarmouseDevice::AlarmouseDevice(int sensor, int alarm, void (*cb)(DeviceEvent event)) {
+AlarmouseDevice::AlarmouseDevice(
+  int sensor, int alarm, int rfControl, void (*cb)(DeviceEvent event)
+) {
   this->alarmPin = alarm;
   this->sensorPin = sensor;
+  this->rfControlPin = rfControl;
   this->status = DeviceStatus::UNCONFIGURED;
   this->onEventCallback = cb;
 
   pinMode(this->sensorPin, INPUT);
   pinMode(this->alarmPin, OUTPUT);
+  pinMode(this->rfControlPin, INPUT);
 }
 
 bool AlarmouseDevice::targetDetected() {
