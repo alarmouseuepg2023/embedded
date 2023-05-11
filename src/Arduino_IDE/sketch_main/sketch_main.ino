@@ -83,6 +83,7 @@ Debounce btnResetWifi = Debounce(
 void setup() {
   Serial.begin(115200);
 
+  alarmouse.setup();
   wifiConnection.setup();
 
   MQTTClient.setServer(MQTT_HOST, MQTT_PORT);

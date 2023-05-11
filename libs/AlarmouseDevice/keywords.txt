@@ -1,7 +1,10 @@
-AlarmouseDevice         KEYWORD1
-statusChangedByExternal KEYWORD2
-loop                    KEYWORD2
-targetDetected          KEYWORD2
-changeStatus            KEYWORD2
-AlarmouseDevice         KEYWORD2
-getStatus               KEYWORD2
+AlarmouseDevice          KEYWORD1
+statusChangedByExternal  KEYWORD2
+loop                     KEYWORD2
+setup                    KEYWORD2
+getStatus                KEYWORD2
+changeStatus             KEYWORD2
+onSensorDetectedCallback KEYWORD2
+onSensorDetectedHandler  KEYWORD2
+onRfChangedCallback      KEYWORD2
+onRfChangedHandler       KEYWORD2

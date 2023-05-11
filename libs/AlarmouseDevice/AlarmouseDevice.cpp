@@ -1,8 +1,11 @@
 #include "AlarmouseDevice.h"
 
+AlarmouseDevice* AlarmouseDevice::interruptControl = nullptr;
+
 AlarmouseDevice::AlarmouseDevice(
   int sensor, int alarm, int rfControl, void (*cb)(DeviceEvent event)
 ) {
+  interruptControl = this;
   this->alarmPin = alarm;
   this->sensorPin = sensor;
   this->rfControlPin = rfControl;
@@ -14,8 +17,29 @@ AlarmouseDevice::AlarmouseDevice(
   pinMode(this->rfControlPin, INPUT);
 }
 
-bool AlarmouseDevice::targetDetected() {
-  return !(digitalRead(this->sensorPin) == HIGH);
+void AlarmouseDevice::setup() {
+  attachInterrupt(digitalPinToInterrupt(this->sensorPin), onSensorDetectedHandler, RISING);
+  attachInterrupt(digitalPinToInterrupt(this->rfControlPin), onRfChangedHandler, CHANGE);
+}
+
+void AlarmouseDevice::onSensorDetectedHandler() {
+  interruptControl->onSensorDetectedCallback();
+}
+
+void AlarmouseDevice::onRfChangedHandler() {
+  interruptControl->onRfChangedCallback();
+}
+
+void AlarmouseDevice::onSensorDetectedCallback() {
+  if (this->status != DeviceStatus::LOCKED)
+    return;
+
+  this->changeStatus(DeviceStatus::TRIGGERED);
+}
+
+void AlarmouseDevice::onRfChangedCallback() {
+  // todo
+  return;
 }
 
 DeviceStatus AlarmouseDevice::getStatus() {
@@ -36,9 +60,8 @@ void AlarmouseDevice::changeStatus(DeviceStatus status) {
 }
 
 void AlarmouseDevice::loop() {
-  if (this->status == DeviceStatus::LOCKED && this->targetDetected())
-    this->changeStatus(DeviceStatus::TRIGGERED);
-
-  // temporary
-  digitalWrite(this->alarmPin, this->status == DeviceStatus::TRIGGERED);
+  digitalWrite(
+    this->alarmPin, 
+    this->status == DeviceStatus::TRIGGERED? HIGH : LOW
+  );
 }
