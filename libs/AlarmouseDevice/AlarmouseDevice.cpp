@@ -12,9 +12,7 @@ AlarmouseDevice::AlarmouseDevice(
   this->status = DeviceStatus::UNCONFIGURED;
   this->onEventCallback = cb;
 
-  pinMode(this->sensorPin, INPUT);
   pinMode(this->alarmPin, OUTPUT);
-  pinMode(this->rfControlPin, INPUT);
 }
 
 void AlarmouseDevice::setup() {
