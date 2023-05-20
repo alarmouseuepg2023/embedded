@@ -161,6 +161,7 @@ void on_mqtt_message_callback(char* topic, byte* payload, unsigned int size) {
 void on_wifi_event_callback(WiFiEvent_t event) {
   if (event == SYSTEM_EVENT_STA_GOT_IP) {
     macAddress = wifiConnection.getMacAddress();
+    alarmouse.setIsConfigurated();
 
     mqttPublishTaskQueue.push(
       MQTT_TOPIC_PUB_GET_CURRENT_STATUS, 
@@ -181,12 +182,11 @@ void on_wifi_event_callback(WiFiEvent_t event) {
       return;
     }
 
-    alarmouse.setIsConfigurated();
     mqttPublishTaskQueue.push(
       MQTT_TOPIC_CONFIGURE_DEVICE(owner_id),
       35,
       "{\"macAddress\":\"%s\"}",
-      wifiConnection.getMacAddress().c_str()
+      macAddress.c_str()
     );
     
     return;
