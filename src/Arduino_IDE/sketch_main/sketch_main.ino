@@ -38,6 +38,7 @@
   DEFINE - MQTT TOPICS
 */
 #define MQTT_TOPIC_PUB_CHANGE_DEVICE_STATUS ("/alarmouse/mqtt/eall/" + String(MQTT_PUBLIC_HASH) + "/control/status/change").c_str()
+#define MQTT_TOPIC_FAILED_STATUS_CHANGED_ATTEMPT ("/alarmouse/mqtt/es/" + String(MQTT_SECRET_HASH) + "/control/status/change/failed").c_str()
 #define MQTT_TOPIC_SUB_CHANGE_DEVICE_STATUS(mac) ("/alarmouse/mqtt/sall/" + String(MQTT_PUBLIC_HASH) + "/control/status/change/" + mac).c_str()
 #define MQTT_TOPIC_PUB_GET_CURRENT_STATUS ("/alarmouse/mqtt/es/" + String(MQTT_SECRET_HASH) + "/control/status/get").c_str()
 #define MQTT_TOPIC_SUB_GET_CURRENT_STATUS(mac) ("/alarmouse/mqtt/se/" + String(MQTT_SECRET_HASH) + "/control/status/get/" + mac).c_str()
@@ -220,6 +221,16 @@ void on_device_event_callback(DeviceEvent event) {
       "{\"macAddress\":\"%s\",\"status\":\"%d\"}",
       macAddress.c_str(),
       static_cast<int>(alarmouse.getStatus())
+    );
+    return;
+  }
+
+  if (event == DeviceEvent::FAILED_STATUS_CHANGED_ATTEMPT) {
+    mqttPublishTaskQueue.push(
+      MQTT_TOPIC_FAILED_STATUS_CHANGED_ATTEMPT,
+      35,
+      "{\"macAddress\":\"%s\"}",
+      macAddress.c_str()
     );
     return;
   }

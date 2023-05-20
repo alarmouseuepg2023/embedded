@@ -47,9 +47,12 @@ DeviceStatus AlarmouseDevice::getStatus() {
 void AlarmouseDevice::statusChangedByExternal(char status) {
   int status_converted = atoi((char*)(&status));
 
-  if (status_converted == 1) this->status = DeviceStatus::LOCKED;
-  if (status_converted == 2) this->status = DeviceStatus::UNLOCKED;
-  if (status_converted == 3) this->status = DeviceStatus::TRIGGERED;
+  switch(status_converted) {
+    case 1: this->status = DeviceStatus::LOCKED; break;
+    case 2: this->status = DeviceStatus::UNLOCKED; break;
+    case 3: this->status = DeviceStatus::TRIGGERED; break;
+    default: this->onEventCallback(DeviceEvent::FAILED_STATUS_CHANGED_ATTEMPT);
+  }
 }
 
 void AlarmouseDevice::changeStatus(DeviceStatus status) {
