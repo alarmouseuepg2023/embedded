@@ -13,6 +13,7 @@
 #include <WiFiConnection.h>
 #include <AlarmouseDevice.h>
 #include <MQTTCredentials.h>
+#include <MQTTPublishTaskQueue.h>
 
 
 /*
@@ -47,12 +48,12 @@
 /*
   PROTOTYPES
 */
+void cpu1Task(void*);
 bool is_uuid_v4(char*);
 void mqtt_connect_and_subscribe();
 void on_btn_reset_wifi_callback();
 void on_wifi_event_callback(WiFiEvent_t);
 void on_device_event_callback(DeviceEvent);
-void publish_json(const char*,size_t,const char*,...);
 void on_mqtt_message_callback(char*,byte*,unsigned int);
 
 
@@ -61,7 +62,6 @@ void on_mqtt_message_callback(char*,byte*,unsigned int);
 */
 String macAddress = "";
 char* owner_id = NULL;
-bool _publish_first_configuration = false;
 WiFiConnection wifiConnection = WiFiConnection(
   DEVICE_ESPTOUCHv2_PASSWORD,
   on_wifi_event_callback
@@ -79,6 +79,7 @@ Debounce btnResetWifi = Debounce(
   3000,
   on_btn_reset_wifi_callback
 );
+MQTTPublishTaskQueue mqttPublishTaskQueue = MQTTPublishTaskQueue();
 
 void setup() {
   Serial.begin(115200);
@@ -91,6 +92,19 @@ void setup() {
 
   pinMode(PIN_LED_WIFI_FEEDBACK, OUTPUT);
   pinMode(PIN_LED_MQTT_FEEDBACK, OUTPUT);
+
+  xTaskCreatePinnedToCore(cpu1Task, "cpu1Task", 4096, NULL, 1, NULL, 1);
+}
+
+void cpu1Task(void* parameter) {
+  while (true) {
+    if (MQTTClient.connected() && mqttPublishTaskQueue.hasQueuedMessage()) {
+      mqtt_message_t message = mqttPublishTaskQueue.pop();
+      MQTTClient.publish(message.topic, message.buffer);
+    }
+
+    delay(50);
+  }
 }
 
 void loop() {
@@ -101,16 +115,6 @@ void loop() {
       wifiConnection.reconnect();
     else 
       if (!MQTTClient.connected()) mqtt_connect_and_subscribe();
-
-  if (_publish_first_configuration && MQTTClient.connected()) {
-    publish_json(
-      MQTT_TOPIC_CONFIGURE_DEVICE(owner_id),
-      35,
-      "{\"macAddress\":\"%s\"}",
-      wifiConnection.getMacAddress().c_str()
-    );
-    _publish_first_configuration = false;
-  }
 
   btnResetWifi.loop();
   MQTTClient.loop();
@@ -154,25 +158,11 @@ void on_mqtt_message_callback(char* topic, byte* payload, unsigned int size) {
   }
 }
 
-void publish_json(const char* topic, size_t max_size, const char* pattern, ...) {
-  char buffer[max_size];
-
-  va_list args;
-  va_start(args, pattern);
-
-  vsnprintf(buffer, sizeof(buffer), pattern, args);
-  buffer[sizeof(buffer) / sizeof(buffer[0]) - 1] = '\0';
-  
-  va_end(args);
-
-  MQTTClient.publish(topic, buffer);
-}
-
 void on_wifi_event_callback(WiFiEvent_t event) {
   if (event == SYSTEM_EVENT_STA_GOT_IP) {
     macAddress = wifiConnection.getMacAddress();
 
-    publish_json(
+    mqttPublishTaskQueue.push(
       MQTT_TOPIC_PUB_GET_CURRENT_STATUS, 
       35,
       "{\"macAddress\":\"%s\"}",
@@ -192,7 +182,12 @@ void on_wifi_event_callback(WiFiEvent_t event) {
     }
 
     alarmouse.setIsConfigurated();
-    _publish_first_configuration = true;
+    mqttPublishTaskQueue.push(
+      MQTT_TOPIC_CONFIGURE_DEVICE(owner_id),
+      35,
+      "{\"macAddress\":\"%s\"}",
+      wifiConnection.getMacAddress().c_str()
+    );
     
     return;
   }
@@ -219,7 +214,7 @@ bool is_uuid_v4(char* uuid) {
 
 void on_device_event_callback(DeviceEvent event) {
   if (event == DeviceEvent::STATUS_CHANGED) {
-    publish_json(
+    mqttPublishTaskQueue.push(
       MQTT_TOPIC_PUB_CHANGE_DEVICE_STATUS,
       48,
       "{\"macAddress\":\"%s\",\"status\":\"%d\"}",
