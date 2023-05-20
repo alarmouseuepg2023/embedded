@@ -37,6 +37,7 @@ public:
   void statusChangedByExternal(char);
   void loop();
   void setup();
+  void setIsConfigurated();
   DeviceStatus getStatus();
 };
 

@@ -104,7 +104,7 @@ void loop() {
 
   if (_publish_first_configuration && MQTTClient.connected()) {
     publish_json(
-      MQTT_TOPIC_CONFIGURE_DEVICE(owner_id), 
+      MQTT_TOPIC_CONFIGURE_DEVICE(owner_id),
       35,
       "{\"macAddress\":\"%s\"}",
       wifiConnection.getMacAddress().c_str()
@@ -186,8 +186,13 @@ void on_wifi_event_callback(WiFiEvent_t event) {
     owner_id = (char*) malloc(sizeof(char) * UUID_V4_LENGTH);
     memcpy(owner_id, rvd_data, UUID_V4_LENGTH + 1);
     
-    if (is_uuid_v4(owner_id)) _publish_first_configuration = true;
-    else wifiConnection.resetSmartConfig();
+    if (!is_uuid_v4(owner_id)) {
+      wifiConnection.resetSmartConfig();
+      return;
+    }
+
+    alarmouse.setIsConfigurated();
+    _publish_first_configuration = true;
     
     return;
   }
@@ -218,8 +223,8 @@ void on_device_event_callback(DeviceEvent event) {
       MQTT_TOPIC_PUB_CHANGE_DEVICE_STATUS,
       48,
       "{\"macAddress\":\"%s\",\"status\":\"%d\"}",
-      wifiConnection.getMacAddress().c_str(),
-      alarmouse.getStatus()
+      macAddress.c_str(),
+      static_cast<int>(alarmouse.getStatus())
     );
     return;
   }

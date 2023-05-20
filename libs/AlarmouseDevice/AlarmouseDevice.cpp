@@ -57,6 +57,13 @@ void AlarmouseDevice::changeStatus(DeviceStatus status) {
   this->onEventCallback(DeviceEvent::STATUS_CHANGED);
 }
 
+void AlarmouseDevice::setIsConfigurated() {
+  if (this->status != DeviceStatus::UNCONFIGURED) 
+    return;
+
+  this->status = DeviceStatus::UNLOCKED;
+}
+
 void AlarmouseDevice::loop() {
   digitalWrite(
     this->alarmPin, 

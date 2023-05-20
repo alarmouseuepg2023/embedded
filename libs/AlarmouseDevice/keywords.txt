@@ -8,3 +8,4 @@ onSensorDetectedCallback KEYWORD2
 onSensorDetectedHandler  KEYWORD2
 onRfChangedCallback      KEYWORD2
 onRfChangedHandler       KEYWORD2
+setIsConfigurated        KEYWORD2
