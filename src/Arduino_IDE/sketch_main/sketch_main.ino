@@ -53,6 +53,7 @@ void cpu1Task(void*);
 bool is_uuid_v4(char*);
 void mqtt_connect_and_subscribe();
 void on_btn_reset_wifi_callback();
+void on_rf_control_triggered_callback();
 void on_wifi_event_callback(WiFiEvent_t);
 void on_device_event_callback(DeviceEvent);
 void on_mqtt_message_callback(char*,byte*,unsigned int);
@@ -72,13 +73,17 @@ PubSubClient MQTTClient(wiFiClient);
 AlarmouseDevice alarmouse = AlarmouseDevice(
   PIN_SENSOR_HC_SR501,
   PIN_ALARM,
-  PIN_RF_CONTROL,
   on_device_event_callback
 );
 Debounce btnResetWifi = Debounce(
   PIN_BTN_RESET_WIFI,
   3000,
   on_btn_reset_wifi_callback
+);
+Debounce rfControlDebounce = Debounce(
+  PIN_RF_CONTROL,
+  1000,
+  on_rf_control_triggered_callback
 );
 MQTTPublishTaskQueue mqttPublishTaskQueue = MQTTPublishTaskQueue();
 
@@ -99,6 +104,8 @@ void setup() {
 
 void cpu1Task(void* parameter) {
   while (true) {
+    rfControlDebounce.loop();
+
     if (MQTTClient.connected() && mqttPublishTaskQueue.hasQueuedMessage()) {
       mqtt_message_t message = mqttPublishTaskQueue.pop();
       MQTTClient.publish(message.topic, message.buffer);
@@ -238,4 +245,8 @@ void on_device_event_callback(DeviceEvent event) {
 
 void on_btn_reset_wifi_callback() {
   wifiConnection.resetSmartConfig();
+}
+
+void on_rf_control_triggered_callback() {
+  Serial.println("callback");
 }
