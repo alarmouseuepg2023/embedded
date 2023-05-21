@@ -29,6 +29,14 @@ void AlarmouseDevice::onSensorDetectedCallback() {
   this->changeStatus(DeviceStatus::TRIGGERED);
 }
 
+void AlarmouseDevice::onRfControlPressedHandler() {
+  interruptControl->onRfControlPressedCallback();
+}
+
+void AlarmouseDevice::onRfControlPressedCallback() {
+  //todo
+}
+
 DeviceStatus AlarmouseDevice::getStatus() {
   return this->status;
 }

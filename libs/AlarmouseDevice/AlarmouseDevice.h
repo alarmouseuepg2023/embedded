@@ -26,6 +26,7 @@ private:
 
   void changeStatus(DeviceStatus);
   void onSensorDetectedCallback();
+  void onRfControlPressedCallback();
 
   static AlarmouseDevice* interruptControl;
   static void IRAM_ATTR onSensorDetectedHandler();
@@ -37,6 +38,8 @@ public:
   void setup();
   void setIsConfigurated();
   DeviceStatus getStatus();
+  
+  static void onRfControlPressedHandler();
 };
 
 

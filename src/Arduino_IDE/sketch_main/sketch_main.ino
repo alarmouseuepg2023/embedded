@@ -53,7 +53,6 @@ void cpu1Task(void*);
 bool is_uuid_v4(char*);
 void mqtt_connect_and_subscribe();
 void on_btn_reset_wifi_callback();
-void on_rf_control_triggered_callback();
 void on_wifi_event_callback(WiFiEvent_t);
 void on_device_event_callback(DeviceEvent);
 void on_mqtt_message_callback(char*,byte*,unsigned int);
@@ -83,7 +82,7 @@ Debounce btnResetWifi = Debounce(
 Debounce rfControlDebounce = Debounce(
   PIN_RF_CONTROL,
   1000,
-  on_rf_control_triggered_callback
+  alarmouse.onRfControlPressedHandler
 );
 MQTTPublishTaskQueue mqttPublishTaskQueue = MQTTPublishTaskQueue();
 
@@ -245,8 +244,4 @@ void on_device_event_callback(DeviceEvent event) {
 
 void on_btn_reset_wifi_callback() {
   wifiConnection.resetSmartConfig();
-}
-
-void on_rf_control_triggered_callback() {
-  Serial.println("callback");
 }
