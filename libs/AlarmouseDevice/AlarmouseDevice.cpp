@@ -34,7 +34,19 @@ void AlarmouseDevice::onRfControlPressedHandler() {
 }
 
 void AlarmouseDevice::onRfControlPressedCallback() {
-  //todo
+  switch (this->status) {
+    case DeviceStatus::UNLOCKED:
+      this->changeStatus(DeviceStatus::LOCKED); 
+      break;
+
+    case DeviceStatus::UNCONFIGURED:
+      break;
+    
+    case DeviceStatus::LOCKED:
+    case DeviceStatus::TRIGGERED:
+      this->changeStatus(DeviceStatus::UNLOCKED); 
+      break;
+  }
 }
 
 DeviceStatus AlarmouseDevice::getStatus() {
