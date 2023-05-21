@@ -22,19 +22,16 @@ private:
   DeviceStatus status;
   unsigned int sensorPin;
   unsigned int alarmPin;
-  unsigned int rfControlPin;
   void (*onEventCallback)(DeviceEvent);
 
   void changeStatus(DeviceStatus);
-  void onRfChangedCallback();
   void onSensorDetectedCallback();
 
   static AlarmouseDevice* interruptControl;
-  static void IRAM_ATTR onRfChangedHandler();
   static void IRAM_ATTR onSensorDetectedHandler();
 
 public:
-  AlarmouseDevice(int,int,int,void (*)(DeviceEvent));
+  AlarmouseDevice(int,int,void (*)(DeviceEvent));
   void statusChangedByExternal(char);
   void loop();
   void setup();

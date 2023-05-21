@@ -3,12 +3,11 @@
 AlarmouseDevice* AlarmouseDevice::interruptControl = nullptr;
 
 AlarmouseDevice::AlarmouseDevice(
-  int sensor, int alarm, int rfControl, void (*cb)(DeviceEvent event)
+  int sensor, int alarm, void (*cb)(DeviceEvent event)
 ) {
   interruptControl = this;
   this->alarmPin = alarm;
   this->sensorPin = sensor;
-  this->rfControlPin = rfControl;
   this->status = DeviceStatus::UNCONFIGURED;
   this->onEventCallback = cb;
 
@@ -17,15 +16,10 @@ AlarmouseDevice::AlarmouseDevice(
 
 void AlarmouseDevice::setup() {
   attachInterrupt(digitalPinToInterrupt(this->sensorPin), onSensorDetectedHandler, RISING);
-  attachInterrupt(digitalPinToInterrupt(this->rfControlPin), onRfChangedHandler, CHANGE);
 }
 
 void AlarmouseDevice::onSensorDetectedHandler() {
   interruptControl->onSensorDetectedCallback();
-}
-
-void AlarmouseDevice::onRfChangedHandler() {
-  interruptControl->onRfChangedCallback();
 }
 
 void AlarmouseDevice::onSensorDetectedCallback() {
@@ -33,11 +27,6 @@ void AlarmouseDevice::onSensorDetectedCallback() {
     return;
 
   this->changeStatus(DeviceStatus::TRIGGERED);
-}
-
-void AlarmouseDevice::onRfChangedCallback() {
-  // todo
-  return;
 }
 
 DeviceStatus AlarmouseDevice::getStatus() {
