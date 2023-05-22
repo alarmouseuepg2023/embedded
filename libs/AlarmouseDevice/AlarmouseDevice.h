@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 
+#define MILLIS_TO_PLAY_ALARM_ON_TRIGGERED 600000
 #define MILLIS_TO_PLAY_ALARM_ON_STATUS_CHANGED 1000
 
 
@@ -25,6 +26,7 @@ private:
   unsigned int sensorPin;
   unsigned int alarmPin;
   unsigned long lastAlarmPlayed;
+  unsigned long lastAlarmTriggered;
   void (*onEventCallback)(DeviceEvent);
 
   void changeStatus(DeviceStatus,bool=true);

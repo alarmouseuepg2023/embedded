@@ -11,6 +11,7 @@ AlarmouseDevice::AlarmouseDevice(
   this->status = DeviceStatus::UNCONFIGURED;
   this->onEventCallback = cb;
   this->lastAlarmPlayed = 0;
+  this->lastAlarmTriggered = 0;
 
   pinMode(this->alarmPin, OUTPUT);
 }
@@ -27,6 +28,7 @@ void AlarmouseDevice::onSensorDetectedCallback() {
   if (this->status != DeviceStatus::LOCKED)
     return;
 
+  this->lastAlarmTriggered = millis();
   this->changeStatus(DeviceStatus::TRIGGERED);
 }
 
@@ -87,7 +89,11 @@ void AlarmouseDevice::setIsConfigurated() {
 void AlarmouseDevice::loop() {
   digitalWrite(
     this->alarmPin, 
-    this->status == DeviceStatus::TRIGGERED ||
+    (
+      this->status == DeviceStatus::TRIGGERED &&
+      millis() <= this->lastAlarmTriggered + MILLIS_TO_PLAY_ALARM_ON_TRIGGERED
+    ) 
+    ||
     (
       this->lastAlarmPlayed != 0 && 
       millis() <= this->lastAlarmPlayed + MILLIS_TO_PLAY_ALARM_ON_STATUS_CHANGED
