@@ -42,6 +42,7 @@ public:
   WiFiConnection(char*, void (*)(WiFiEvent_t));
   bool connected();
 	String getMacAddress();
+  String getSsid();
 	IPAddress getLocalIP();
   bool waitSmartConfig();
   void resetSmartConfig();

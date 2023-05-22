@@ -44,7 +44,7 @@
 #define MQTT_TOPIC_SUB_GET_CURRENT_STATUS(mac) ("/alarmouse/mqtt/se/" + String(MQTT_SECRET_HASH) + "/control/status/get/" + mac).c_str()
 #define MQTT_TOPIC_ERROR_AT_CREATE_DEVICE(mac) ("/alarmouse/mqtt/se/" + String(MQTT_SECRET_HASH) + "/control/error/create_device/" + mac).c_str()
 #define MQTT_TOPIC_CONFIGURE_DEVICE(id) ("/alarmouse/mqtt/em/" + String(MQTT_PUBLIC_HASH) + "/device/configure/" + String(id)).c_str()
-
+#define MQTT_TOPIC_CHANGE_WIFI ("/alarmouse/mqtt/se/" + String(MQTT_SECRET_HASH) + "/control/wifi").c_str()
 
 /*
   PROTOTYPES
@@ -63,6 +63,7 @@ void on_mqtt_message_callback(char*,byte*,unsigned int);
 */
 String macAddress = "";
 char* owner_id = NULL;
+bool wifi_has_reset_by_btn = false;
 WiFiConnection wifiConnection = WiFiConnection(
   DEVICE_ESPTOUCHv2_PASSWORD,
   on_wifi_event_callback
@@ -177,6 +178,21 @@ void on_wifi_event_callback(WiFiEvent_t event) {
       macAddress.c_str()
     );
     
+    if (wifi_has_reset_by_btn) {
+      wifi_has_reset_by_btn = false;
+      String _ssid = wifiConnection.getSsid();
+      
+      mqttPublishTaskQueue.push(
+        MQTT_TOPIC_CHANGE_WIFI, 
+        44 + _ssid.length() + 1,
+        "{\"macAddress\":\"%s\",\"ssid\":\"%s\"}",
+        macAddress.c_str(),
+        _ssid.c_str()
+      );
+
+      return;
+    }
+    
     if (USE_FLASH_MEMORY) return;
 
     uint8_t rvd_data[UUID_V4_LENGTH + 1] = { 0 };
@@ -243,5 +259,6 @@ void on_device_event_callback(DeviceEvent event) {
 }
 
 void on_btn_reset_wifi_callback() {
+  wifi_has_reset_by_btn = true;
   wifiConnection.resetSmartConfig();
 }

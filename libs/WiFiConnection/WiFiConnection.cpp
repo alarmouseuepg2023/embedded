@@ -5,7 +5,6 @@ WiFiConnection::WiFiConnection(char* espTouchPassword, void (*cb)(WiFiEvent_t)) 
 	this->espTouchPassword = espTouchPassword;
 	this->smartConfigStatus = SmartConfigStatus::WAITING;
 
-	WiFi.disconnect(true);
 	WiFi.onEvent(cb);
 }
 
@@ -28,16 +27,16 @@ void WiFiConnection::setup() {
 }
 
 void WiFiConnection::updateWifiCredentialsSaved(unsigned int config, String _ssid, String _password) {
+	this->hasWifiCredentialsSaved = config == WIFI_PREF_SAVED;
+
 #if USE_FLASH_MEMORY
 	this->preferences.putUInt(PREF_CONFIGURATED, config);
 
 	if (config == WIFI_PREF_SAVED) {
-		this->hasWifiCredentialsSaved = true;
 		this->preferences.putString(PREF_SSID, _ssid);
 		this->preferences.putString(PREF_PASSWORD, _password);
 	}
 	else {
-		this->hasWifiCredentialsSaved = false;
 		this->preferences.remove(PREF_SSID);
 		this->preferences.remove(PREF_PASSWORD);
 	}
@@ -80,19 +79,22 @@ String WiFiConnection::getMacAddress() {
 	return WiFi.macAddress();
 }
 
+String WiFiConnection::getSsid() {
+	return WiFi.SSID();
+}
+
 void WiFiConnection::resetSmartConfig() {
 	this->updateWifiCredentialsSaved(WIFI_PREF_UNSAVED);
-#if USE_FLASH_MEMORY
-	this->preferences.end();
-#endif
-	ESP.restart();
+	this->smartConfigStatus = SmartConfigStatus::WAITING;
+	WiFi.disconnect();
+	WiFi.stopSmartConfig();
 }
 
 bool WiFiConnection::waitSmartConfig() {
 	if (this->smartConfigStatus == SmartConfigStatus::WAITING) {
 		this->smartConfigStatus = SmartConfigStatus::STARTED;
 
-		WiFi.mode(WIFI_AP_STA);
+		WiFi.mode(WIFI_AP);
 		WiFi.beginSmartConfig(SC_TYPE_ESPTOUCH_V2, this->espTouchPassword);
 	}
 

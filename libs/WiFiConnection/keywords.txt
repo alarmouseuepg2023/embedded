@@ -7,3 +7,4 @@ resetSmartConfig            KEYWORD2
 hasWifiCredentialsSaved     KEYWORD2
 hasWifiCredentials          KEYWORD2
 copyCredentials             KEYWORD2
+getSsid                     KEYWORD2
