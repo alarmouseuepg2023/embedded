@@ -10,6 +10,7 @@ AlarmouseDevice::AlarmouseDevice(
   this->sensorPin = sensor;
   this->status = DeviceStatus::UNCONFIGURED;
   this->onEventCallback = cb;
+  this->lastAlarmPlayed = 0;
 
   pinMode(this->alarmPin, OUTPUT);
 }
@@ -57,16 +58,23 @@ void AlarmouseDevice::statusChangedByExternal(char status) {
   int status_converted = atoi((char*)(&status));
 
   switch(status_converted) {
-    case 1: this->status = DeviceStatus::LOCKED; break;
-    case 2: this->status = DeviceStatus::UNLOCKED; break;
-    case 3: this->status = DeviceStatus::TRIGGERED; break;
+    case 1: this->changeStatus(DeviceStatus::LOCKED, false);    break;
+    case 2: this->changeStatus(DeviceStatus::UNLOCKED, false);  break;
+    case 3: this->changeStatus(DeviceStatus::TRIGGERED, false); break;
     default: this->onEventCallback(DeviceEvent::FAILED_STATUS_CHANGED_ATTEMPT);
   }
 }
 
-void AlarmouseDevice::changeStatus(DeviceStatus status) {
+void AlarmouseDevice::changeStatus(DeviceStatus status, bool notify) {
+  if (
+    this->status == DeviceStatus::LOCKED && status == DeviceStatus::UNLOCKED ||
+    this->status == DeviceStatus::UNLOCKED && status == DeviceStatus::LOCKED
+  )
+    this->lastAlarmPlayed = millis();
+
   this->status = status;
-  this->onEventCallback(DeviceEvent::STATUS_CHANGED);
+
+  if (notify) this->onEventCallback(DeviceEvent::STATUS_CHANGED);
 }
 
 void AlarmouseDevice::setIsConfigurated() {
@@ -79,6 +87,10 @@ void AlarmouseDevice::setIsConfigurated() {
 void AlarmouseDevice::loop() {
   digitalWrite(
     this->alarmPin, 
-    this->status == DeviceStatus::TRIGGERED? HIGH : LOW
+    this->status == DeviceStatus::TRIGGERED ||
+    (
+      this->lastAlarmPlayed != 0 && 
+      millis() <= this->lastAlarmPlayed + MILLIS_TO_PLAY_ALARM_ON_STATUS_CHANGED
+    )
   );
 }

@@ -3,6 +3,8 @@
 
 #include <Arduino.h>
 
+#define MILLIS_TO_PLAY_ALARM_ON_STATUS_CHANGED 1000
+
 
 enum DeviceStatus {
   UNCONFIGURED = 0,
@@ -22,9 +24,10 @@ private:
   DeviceStatus status;
   unsigned int sensorPin;
   unsigned int alarmPin;
+  unsigned long lastAlarmPlayed;
   void (*onEventCallback)(DeviceEvent);
 
-  void changeStatus(DeviceStatus);
+  void changeStatus(DeviceStatus,bool=true);
   void onSensorDetectedCallback();
   void onRfControlPressedCallback();
 
