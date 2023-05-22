@@ -104,6 +104,7 @@ void setup() {
 
 void cpu1Task(void* parameter) {
   while (true) {
+    btnResetWifi.loop();
     rfControlDebounce.loop();
 
     if (MQTTClient.connected() && mqttPublishTaskQueue.hasQueuedMessage()) {
@@ -124,7 +125,6 @@ void loop() {
     else 
       if (!MQTTClient.connected()) mqtt_connect_and_subscribe();
 
-  btnResetWifi.loop();
   MQTTClient.loop();
   alarmouse.loop();
 
