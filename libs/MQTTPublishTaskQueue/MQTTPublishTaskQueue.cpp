@@ -13,7 +13,7 @@ bool MQTTPublishTaskQueue::hasQueuedMessage() {
   return uxQueueMessagesWaiting(this->queue) > 0;
 }
 
-void MQTTPublishTaskQueue::push(const char* topic, size_t max_size, const char* pattern, ...) {
+void MQTTPublishTaskQueue::enqueue(const char* topic, size_t max_size, const char* pattern, ...) {
   char buffer[max_size];
 
   va_list args;
@@ -26,13 +26,13 @@ void MQTTPublishTaskQueue::push(const char* topic, size_t max_size, const char* 
 
   mqtt_message_t message = {
     .topic=strdup(topic),
-    .buffer=buffer
+    .buffer=strdup(buffer)
   };
 
   xQueueSendToBack(this->queue, &message, portMAX_DELAY);
 }
 
-mqtt_message_t MQTTPublishTaskQueue::pop() {
+mqtt_message_t MQTTPublishTaskQueue::dequeue() {
   mqtt_message_t message;
   xQueueReceive(this->queue, &message, portMAX_DELAY);
 

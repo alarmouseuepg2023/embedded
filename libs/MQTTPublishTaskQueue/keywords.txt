@@ -1,5 +1,5 @@
 MQTTPublishTaskQueue   KEYWORD1
 ~                      KEYWORD1
 hasQueuedMessage       KEYWORD2
-pop                    KEYWORD2
-push                   KEYWORD2
+dequeue                KEYWORD2
+enqueue                KEYWORD2

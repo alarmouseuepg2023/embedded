@@ -22,8 +22,8 @@ public:
   MQTTPublishTaskQueue();
   ~MQTTPublishTaskQueue();
   bool hasQueuedMessage();
-  mqtt_message_t pop();
-  void push(const char*,size_t,const char*,...);
+  mqtt_message_t dequeue();
+  void enqueue(const char*,size_t,const char*,...);
 
 };
 

@@ -107,7 +107,7 @@ void cpu1Task(void* parameter) {
     rfControlDebounce.loop();
 
     if (MQTTClient.connected() && mqttPublishTaskQueue.hasQueuedMessage()) {
-      mqtt_message_t message = mqttPublishTaskQueue.pop();
+      mqtt_message_t message = mqttPublishTaskQueue.dequeue();
       MQTTClient.publish(message.topic, message.buffer);
     }
 
@@ -171,7 +171,7 @@ void on_wifi_event_callback(WiFiEvent_t event) {
     macAddress = wifiConnection.getMacAddress();
     alarmouse.setIsConfigurated();
 
-    mqttPublishTaskQueue.push(
+    mqttPublishTaskQueue.enqueue(
       MQTT_TOPIC_PUB_GET_CURRENT_STATUS, 
       35,
       "{\"macAddress\":\"%s\"}",
@@ -182,7 +182,7 @@ void on_wifi_event_callback(WiFiEvent_t event) {
       wifi_has_reset_by_btn = false;
       String _ssid = wifiConnection.getSsid();
       
-      mqttPublishTaskQueue.push(
+      mqttPublishTaskQueue.enqueue(
         MQTT_TOPIC_CHANGE_WIFI, 
         44 + _ssid.length() + 1,
         "{\"macAddress\":\"%s\",\"ssid\":\"%s\"}",
@@ -205,7 +205,7 @@ void on_wifi_event_callback(WiFiEvent_t event) {
       return;
     }
 
-    mqttPublishTaskQueue.push(
+    mqttPublishTaskQueue.enqueue(
       MQTT_TOPIC_CONFIGURE_DEVICE(owner_id),
       35,
       "{\"macAddress\":\"%s\"}",
@@ -237,7 +237,7 @@ bool is_uuid_v4(char* uuid) {
 
 void on_device_event_callback(DeviceEvent event) {
   if (event == DeviceEvent::STATUS_CHANGED) {
-    mqttPublishTaskQueue.push(
+    mqttPublishTaskQueue.enqueue(
       MQTT_TOPIC_PUB_CHANGE_DEVICE_STATUS,
       48,
       "{\"macAddress\":\"%s\",\"status\":\"%d\"}",
@@ -248,7 +248,7 @@ void on_device_event_callback(DeviceEvent event) {
   }
 
   if (event == DeviceEvent::FAILED_STATUS_CHANGED_ATTEMPT) {
-    mqttPublishTaskQueue.push(
+    mqttPublishTaskQueue.enqueue(
       MQTT_TOPIC_FAILED_STATUS_CHANGED_ATTEMPT,
       35,
       "{\"macAddress\":\"%s\"}",
