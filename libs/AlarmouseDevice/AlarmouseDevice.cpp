@@ -25,7 +25,10 @@ void AlarmouseDevice::onSensorDetectedHandler() {
 }
 
 void AlarmouseDevice::onSensorDetectedCallback() {
-  if (this->status != DeviceStatus::LOCKED)
+  if (
+    this->status != DeviceStatus::LOCKED || 
+    this->status == DeviceStatus::TRIGGERED
+  )
     return;
 
   this->lastAlarmTriggered = millis();
