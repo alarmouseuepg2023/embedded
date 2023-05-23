@@ -60,14 +60,14 @@ void AlarmouseDevice::statusChangedByExternal(char status) {
   int status_converted = atoi((char*)(&status));
 
   switch(status_converted) {
-    case 1: this->changeStatus(DeviceStatus::LOCKED, false);    break;
-    case 2: this->changeStatus(DeviceStatus::UNLOCKED, false);  break;
-    case 3: this->changeStatus(DeviceStatus::TRIGGERED, false); break;
+    case 1: this->changeStatus(DeviceStatus::LOCKED);    break;
+    case 2: this->changeStatus(DeviceStatus::UNLOCKED);  break;
+    case 3: this->changeStatus(DeviceStatus::TRIGGERED); break;
     default: this->onEventCallback(DeviceEvent::FAILED_STATUS_CHANGED_ATTEMPT);
   }
 }
 
-void AlarmouseDevice::changeStatus(DeviceStatus status, bool notify) {
+void AlarmouseDevice::changeStatus(DeviceStatus status) {
   if (
     this->status == DeviceStatus::LOCKED && status == DeviceStatus::UNLOCKED ||
     this->status == DeviceStatus::UNLOCKED && status == DeviceStatus::LOCKED
@@ -75,8 +75,7 @@ void AlarmouseDevice::changeStatus(DeviceStatus status, bool notify) {
     this->lastAlarmPlayed = millis();
 
   this->status = status;
-
-  if (notify) this->onEventCallback(DeviceEvent::STATUS_CHANGED);
+  this->onEventCallback(DeviceEvent::STATUS_CHANGED);
 }
 
 void AlarmouseDevice::setIsConfigurated() {

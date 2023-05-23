@@ -29,7 +29,7 @@ private:
   unsigned long lastAlarmTriggered;
   void (*onEventCallback)(DeviceEvent);
 
-  void changeStatus(DeviceStatus,bool=true);
+  void changeStatus(DeviceStatus);
   void onSensorDetectedCallback();
   void onRfControlPressedCallback();
 
