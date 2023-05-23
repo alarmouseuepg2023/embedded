@@ -250,9 +250,10 @@ void on_device_event_callback(DeviceEvent event) {
   if (event == DeviceEvent::FAILED_STATUS_CHANGED_ATTEMPT) {
     mqttPublishTaskQueue.enqueue(
       MQTT_TOPIC_FAILED_STATUS_CHANGED_ATTEMPT,
-      35,
-      "{\"macAddress\":\"%s\"}",
-      macAddress.c_str()
+      48,
+      "{\"macAddress\":\"%s\",\"status\":\"%d\"}",
+      macAddress.c_str(),
+      static_cast<int>(alarmouse.getStatus())
     );
     return;
   }
