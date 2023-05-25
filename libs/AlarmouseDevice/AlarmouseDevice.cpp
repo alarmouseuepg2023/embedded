@@ -31,7 +31,6 @@ void AlarmouseDevice::onSensorDetectedCallback() {
   )
     return;
 
-  this->lastAlarmTriggered = millis();
   this->changeStatus(DeviceStatus::TRIGGERED);
 }
 
@@ -76,6 +75,9 @@ void AlarmouseDevice::changeStatus(DeviceStatus status) {
     this->status == DeviceStatus::UNLOCKED && status == DeviceStatus::LOCKED
   )
     this->lastAlarmPlayed = millis();
+
+  if (status == DeviceStatus::TRIGGERED)
+    this->lastAlarmTriggered = millis();
 
   this->status = status;
   this->onEventCallback(DeviceEvent::STATUS_CHANGED);
