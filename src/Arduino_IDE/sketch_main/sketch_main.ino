@@ -262,4 +262,5 @@ void on_device_event_callback(DeviceEvent event) {
 void on_btn_reset_wifi_callback() {
   wifi_has_reset_by_btn = true;
   wifiConnection.resetSmartConfig();
+  alarmouse.triggerAlarm2UserFeedback();
 }

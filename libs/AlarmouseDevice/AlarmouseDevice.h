@@ -42,6 +42,7 @@ public:
   void loop();
   void setup();
   void setIsConfigurated();
+  void triggerAlarm2UserFeedback();
   DeviceStatus getStatus();
   
   static void onRfControlPressedHandler();

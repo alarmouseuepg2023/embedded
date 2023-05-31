@@ -9,3 +9,4 @@ onSensorDetectedHandler     KEYWORD2
 onRfControlPressedCallback  KEYWORD2
 onRfControlPressedHandler   KEYWORD2
 setIsConfigurated           KEYWORD2
+triggerAlarm2UserFeedback   KEYWORD2

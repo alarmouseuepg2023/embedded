@@ -58,6 +58,10 @@ DeviceStatus AlarmouseDevice::getStatus() {
   return this->status;
 }
 
+void AlarmouseDevice::triggerAlarm2UserFeedback() {
+  this->lastAlarmPlayed = millis();
+}
+
 void AlarmouseDevice::statusChangedByExternal(char status) {
   int status_converted = atoi((char*)(&status));
 
