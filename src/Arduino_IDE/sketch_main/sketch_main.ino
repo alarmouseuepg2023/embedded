@@ -193,7 +193,8 @@ void on_wifi_event_callback(WiFiEvent_t event) {
       return;
     }
     
-    if (USE_FLASH_MEMORY) return;
+    if (USE_FLASH_MEMORY && wifiConnection.hasWifiCredentials())
+      return;
 
     uint8_t rvd_data[UUID_V4_LENGTH + 1] = { 0 };
     esp_smartconfig_get_rvd_data(rvd_data, sizeof(rvd_data));
