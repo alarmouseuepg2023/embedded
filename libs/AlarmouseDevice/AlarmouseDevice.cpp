@@ -69,6 +69,7 @@ void AlarmouseDevice::statusChangedByExternal(char status) {
     case 1: this->changeStatus(DeviceStatus::LOCKED);    break;
     case 2: this->changeStatus(DeviceStatus::UNLOCKED);  break;
     case 3: this->changeStatus(DeviceStatus::TRIGGERED); break;
+    case 0: case 4:                                      break;
     default: this->onEventCallback(DeviceEvent::FAILED_STATUS_CHANGED_ATTEMPT);
   }
 }
