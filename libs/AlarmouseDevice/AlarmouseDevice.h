@@ -5,6 +5,7 @@
 
 #define MILLIS_TO_PLAY_ALARM_ON_TRIGGERED 600000
 #define MILLIS_TO_PLAY_ALARM_ON_STATUS_CHANGED 1000
+#define MILLIS_DELAY_TO_ACTIVATE 3000
 
 
 enum DeviceStatus {
@@ -28,6 +29,7 @@ private:
   unsigned int alarmPin;
   unsigned long lastAlarmPlayed;
   unsigned long lastAlarmTriggered;
+  unsigned long lastLockedTime;
   void (*onEventCallback)(DeviceEvent);
 
   void changeStatus(DeviceStatus);

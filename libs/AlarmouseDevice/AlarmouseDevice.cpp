@@ -12,6 +12,7 @@ AlarmouseDevice::AlarmouseDevice(
   this->onEventCallback = cb;
   this->lastAlarmPlayed = 0;
   this->lastAlarmTriggered = 0;
+  this->lastLockedTime = 0;
 
   pinMode(this->alarmPin, OUTPUT);
 }
@@ -29,6 +30,9 @@ void AlarmouseDevice::onSensorDetectedCallback() {
     this->status != DeviceStatus::LOCKED || 
     this->status == DeviceStatus::TRIGGERED
   )
+    return;
+
+  if (millis() <= this->lastLockedTime + MILLIS_DELAY_TO_ACTIVATE) 
     return;
 
   this->changeStatus(DeviceStatus::TRIGGERED);
@@ -83,6 +87,9 @@ void AlarmouseDevice::changeStatus(DeviceStatus status) {
 
   if (status == DeviceStatus::TRIGGERED)
     this->lastAlarmTriggered = millis();
+
+  if (status == DeviceStatus::LOCKED)
+    this->lastLockedTime = millis();
 
   this->status = status;
   this->onEventCallback(DeviceEvent::STATUS_CHANGED);
