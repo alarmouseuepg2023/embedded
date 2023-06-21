@@ -44,9 +44,6 @@ void WiFiConnection::updateWifiCredentialsSaved(unsigned int config, String _ssi
 }
 
 void WiFiConnection::copyCredentials(String _ssid, String _password) {
-	if (this->ssid != NULL) free(this->ssid);
-	if (this->password != NULL) free(this->password);
-
 	this->ssid = (char*) malloc(sizeof(char) * _ssid.length());
 	strcpy(this->ssid, _ssid.c_str());
 	
