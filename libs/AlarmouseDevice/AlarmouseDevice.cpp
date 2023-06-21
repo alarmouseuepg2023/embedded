@@ -45,12 +45,10 @@ void AlarmouseDevice::onRfControlPressedHandler() {
 void AlarmouseDevice::onRfControlPressedCallback() {
   switch (this->status) {
     case DeviceStatus::UNLOCKED:
+    case DeviceStatus::UNCONFIGURED:
       this->changeStatus(DeviceStatus::LOCKED); 
       break;
 
-    case DeviceStatus::UNCONFIGURED:
-      break;
-    
     case DeviceStatus::LOCKED:
     case DeviceStatus::TRIGGERED:
       this->changeStatus(DeviceStatus::UNLOCKED); 
